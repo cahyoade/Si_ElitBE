@@ -86,7 +86,7 @@ class ClassService {
             start_date='${entity.start_date}',
             end_date='${entity.end_date}',
             manager_id='${entity.manager_id}',
-            teacher_id='${entity.teacher_id}',
+            teacher_id='${entity.teacher_id}'
             where id= ${entity.id}`;
 
             connection.query(query, (err, rows) => {
@@ -101,14 +101,14 @@ class ClassService {
 
     });
 
-    deleteUser = (classId) => new Promise((resolve, reject) => {
+    deleteClass = (classId) => new Promise((resolve, reject) => {
         this.pool.getConnection((err, connection) => {
             if (err) {
                 reject({ msg: "Could not connect to the database." });
                 return;
             }
 
-            const query = `delete from classes where id= ${classId}`;
+            const query = `delete from classes where id=${classId}`;
 
             connection.query(query, (err, rows) => {
                 connection.release();

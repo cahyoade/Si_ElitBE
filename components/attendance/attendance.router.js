@@ -1,16 +1,17 @@
 import express from 'express';
 
 class AttendanceRouter {
-	constructor(attendanceController) {
+	constructor(attendanceController, authService) {
 		this.attendanceController = attendanceController;
+		this.authService = authService;
 	}
 
 	getRouter() {
 		const router = express.Router();
-		router.route('/').get(this.attendanceController.getAttendance);
-		router.route('/').post(this.attendanceController.createAttendance);
-		router.route('/').put(this.attendanceController.updateAttendance);
-		router.route('/').delete(this.attendanceController.deleteAttendance);
+		router.route('/').get(this.authService.authorizeStudent, this.attendanceController.getAttendance);
+		router.route('/').post(this.authService.authorizeAdmin, this.attendanceController.createAttendance);
+		router.route('/').put(this.authService.authorizeAdmin, this.attendanceController.updateAttendance);
+		router.route('/').delete(this.authService.authorizeAdmin, this.attendanceController.deleteAttendance);
 		return router;
 	}
 }

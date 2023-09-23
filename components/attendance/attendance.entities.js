@@ -1,4 +1,4 @@
-class Attendances {
+class Attendance {
 	constructor(user_id, class_id, attend_at, status) {
 		this.user_id = user_id;
 		this.class_id = class_id;
@@ -16,4 +16,4 @@ class Attendances {
 	}
 }
 
-export default Attendances;
+export default Attendance;

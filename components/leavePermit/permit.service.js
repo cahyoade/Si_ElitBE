@@ -150,12 +150,12 @@ class PermitService {
                 return;
             }
 
-            const query = `delete from users where user_id=${userId} class_id=${classId}`;
+            const query = `delete from leave_permits where user_id=${userId} and class_id=${classId}`;
 
             connection.query(query, (err, rows) => {
                 connection.release();
                 if (err) {
-                    reject({ msg: "An error occured while trying to query the database." });
+                    reject({ msg: "An error occured while trying to query the database."});
                     return;
                 }
                 resolve({ msg: "Permit deleted." });

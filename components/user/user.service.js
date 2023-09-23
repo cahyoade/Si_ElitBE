@@ -81,6 +81,27 @@ class UserService {
     }
     );
 
+    getUserByName = (name) => new Promise((resolve, reject) => {
+        this.pool.getConnection((err, connection) => {
+            if (err) {
+                reject({ msg: "Could not connect to the database." });
+                return;
+            }
+
+            const query = `select * from users where name='${name}'`;
+
+            connection.query(query, (err, rows) => {
+                connection.release();
+                if (err) {
+                    reject({ msg: "Username or password is not correct."});
+                    return;
+                }
+                resolve(rows);
+            });
+        });
+    }
+    );
+
     updateUser = async (user) => new Promise(async (resolve, reject) => {
         const hashedPassword = await bcrypt.hash(user.password, 10).catch((err) => {
             reject({ msg: "Bcrypt error." });
