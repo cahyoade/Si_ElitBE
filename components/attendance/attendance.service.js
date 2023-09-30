@@ -58,6 +58,7 @@ class AttendanceService {
     attendByCardId = (cardId) => new Promise(async (resolve, reject) => {
         let newAttendance;
         const currentTime = {date: new Date(), string: moment().format('YYYY-MM-DD HH:mm:ss')};
+        console.log(currentTime);
         
         //get attendance
         this.pool.getConnection((err, connection) => {
@@ -70,7 +71,7 @@ class AttendanceService {
             on a.class_id = c.id
             left join users u
             on a.user_id = u.id
-            where '2023-09-20 12:03:22' between start_date and end_date
+            where '${currentTime.string}' between start_date and end_date
             and card_id = '${cardId}'`;
 
             connection.query(query, async (err, rows) => {

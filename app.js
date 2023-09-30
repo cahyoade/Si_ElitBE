@@ -19,7 +19,7 @@ class App {
         this.app = express();
         this.app.use(express.json());
         this.app.use(express.static('public'));
-        this.app.use(cors({ origin: 'localhost' }));
+        this.app.use(cors({ origin: '*' }));
         this.app.use('/users', this.userModule.create().router);
         this.app.use('/permits', this.permitModule.create().router);
         this.app.use('/classes', this.classModule.create().router);

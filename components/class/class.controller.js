@@ -40,6 +40,15 @@ class ClassController {
 		}
 	};
 
+	getUpcomingClass = async (req, res) => {
+		try{
+			const dbResult = await this.classService.getUpcomingClasses();
+			return res.status(200).send(dbResult);
+		}catch(err){
+			return res.status(500).send(err);
+		}
+	};
+
 	updateClass = async (req, res) => {
 		const entity = new Class(
 			req.body.id,

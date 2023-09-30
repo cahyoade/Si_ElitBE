@@ -37,7 +37,7 @@ class MqttService {
     handleAttendance = async (topic, cardId) => {
         try{
             const result = await this.attendanceService.attendByCardId(cardId);
-            this.client.publish(topic, `res_att Presensi berhasil. Status: ${result}`);
+            this.client.publish(topic, `res_att ${result}`);
         }catch(err){
             this.client.publish(topic, `res_att Presensi gagal, ${err}`);
         }

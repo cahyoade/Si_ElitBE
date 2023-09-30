@@ -2,6 +2,7 @@ import AttendanceService from "../attendance/attendance.service.js";
 import MqttRouter from "./mqtt.router.js";
 import MqttService from "./mqtt.service.js";
 import AuthService from "../auth/auth.service.js";
+import { spawn, exec } from 'child_process';
 
 class MqttModule {
     constructor(env){
@@ -12,7 +13,10 @@ class MqttModule {
         this.mqttRouter = new MqttRouter(this.mqttService.getDevicesStatus, this.AuthService);
     }
 
-    startService = () => {this.mqttService.start()}
+    startService = () => {
+        const broker = spawn('mosquitto', ['-v', '-c', 'mosquitto.conf'], {shell: true, cwd: process.cwd() + "\\components\\mosquitto"});
+        this.mqttService.start();
+    }
     getRouter = () => this.mqttRouter.getRouter();
 
 }
