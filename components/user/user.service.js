@@ -20,12 +20,13 @@ class UserService {
             return;
         });
 
+
         this.pool.getConnection((err, connection) => {
             if (err) {
                 reject({ msg: "Could not connect to the database." });
                 return;
             }
-            const query = `insert into users( name, card_id, password, birth_date, grade, telephone_number, role) values ('${user.name}','${user.card_id}', '${hashedPassword}', '${user.birth_date}', '${user.grade}', '${user.telephone_number}', '${user.role}')`;
+            const query = `insert into users( name, card_id, password, birth_date, grade, telephone_number, role, nis, is_active, inactive_reason, gender, class_type, origin, residence_in_semarang) values ('${user.name}','${user.card_id}', '${hashedPassword}', '${user.birth_date}', '${user.grade}', '${user.telephone_number}', '${user.role}', '${user.nis}', '${user.is_active}', '${user.inactive_reason}', '${user.gender}', '${user.class_type}', '${user.origin}', '${user.residence_in_semarang}')`;
 
             connection.query(query, (err, rows) => {
                 connection.release();
@@ -46,7 +47,11 @@ class UserService {
                 return;
             }
 
-            const query = `select * from users`;
+            const query = `select u.*, r.name as role_name, ct.name as class_name from users u
+            left join roles r
+            on u.role = r.id
+            left join class_types ct 
+            on u.class_type = ct.id`;
 
             connection.query(query, (err, rows) => {
                 connection.release();
@@ -67,12 +72,16 @@ class UserService {
                 return;
             }
 
-            const query = `select * from users where id = ${id}`;
+            const query = `select u.*, r.name as role_name, ct.name as class_name from users u
+            left join roles r
+            on u.role = r.id
+            left join class_types ct 
+            on u.class_type = ct.id where u.id = ${id}`;
 
             connection.query(query, (err, rows) => {
                 connection.release();
                 if (err) {
-                    reject({ msg: "An error occured while trying to query the database." });
+                    reject({ msg: "An error occured while trying to query the database.", err: err });
                     return;
                 }
                 resolve(rows);
@@ -88,7 +97,12 @@ class UserService {
                 return;
             }
 
-            const query = `select * from users where name='${name}'`;
+            const query = `select u.*, r.name as role_name, ct.name as class_name from users u
+            left join roles r
+            on u.role = r.id
+            left join class_types ct 
+            on u.class_type = ct.id 
+            where u.name='${name}'`;
 
             connection.query(query, (err, rows) => {
                 connection.release();
@@ -102,7 +116,7 @@ class UserService {
     }
     );
 
-    updateUser = async (user) => new Promise(async (resolve, reject) => {
+    updateUser = async (user, withUpdatePassword) => new Promise(async (resolve, reject) => {
         const hashedPassword = await bcrypt.hash(user.password, 10).catch((err) => {
             reject({ msg: "Bcrypt error." });
             return;
@@ -117,18 +131,25 @@ class UserService {
             const query = `update users set 
             name='${user.name}',
             card_id='${user.card_id}',
-            password='${hashedPassword}',
+            password='${withUpdatePassword ? hashedPassword : user.password}',
             birth_date='${user.birth_date}',
             grade='${user.grade}',
             telephone_number='${user.telephone_number}',
-            role='${user.role}'
+            role='${user.role}',
+            nis='${user.nis}',
+            is_active='${user.is_active}',
+            inactive_reason='${user.inactive_reason}',
+            gender='${user.gender}',
+            class_type='${user.class_type}',
+            origin='${user.origin}',
+            residence_in_semarang ='${user.residence_in_semarang}'
             where id= ${user.id}
             `;
 
             connection.query(query, (err, rows) => {
                 connection.release();
                 if (err) {
-                    reject({ msg: "An error occured while trying to query the database." });
+                    reject({ msg: "An error occured while trying to query the database.", err: err});
                     return;
                 }
                 resolve({ msg: "user updated" });

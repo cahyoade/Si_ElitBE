@@ -13,6 +13,7 @@ class ClassController {
 			req.body.end_date,
 			req.body.manager_id,
 			req.body.teacher_id,
+			req.body.location
 		);
 
 		try{
@@ -57,6 +58,7 @@ class ClassController {
 			req.body.end_date,
 			req.body.manager_id,
 			req.body.teacher_id,
+			req.body.location
 		);
 
 		try{

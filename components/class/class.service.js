@@ -18,7 +18,8 @@ class ClassService {
                 reject({ msg: "Could not connect to the database." });
                 return;
             }
-            const query = `insert into classes( name, start_date, end_date, manager_id, teacher_id) values ('${entity.name}','${entity.start_date}', '${entity.end_date}', '${entity.manager_id}', '${entity.teacher_id}')`;
+
+            const query = `insert into classes( name, start_date, end_date, manager_id, teacher_id, location) values ('${entity.name}','${entity.start_date}', '${entity.end_date}', '${entity.manager_id}', '${entity.teacher_id}', '${entity.location}')`;
 
             connection.query(query, (err, rows) => {
                 connection.release();
@@ -32,6 +33,7 @@ class ClassService {
 
     });
 
+
     getClasses = () => new Promise((resolve, reject) => {
         this.pool.getConnection((err, connection) => {
             if (err) {
@@ -39,7 +41,7 @@ class ClassService {
                 return;
             }
 
-            const query = `select * from classes`;
+            const query = `select c.*, ct.name as type_name from classes c left join class_types ct on c.type = ct.id`;
 
             connection.query(query, (err, rows) => {
                 connection.release();
@@ -60,7 +62,7 @@ class ClassService {
                 return;
             }
 
-            const query = `select * from classes where start_date > now()`;
+            const query = `select * from classes where start_date > now() limit 50`;
 
             connection.query(query, (err, rows) => {
                 connection.release();
@@ -107,7 +109,9 @@ class ClassService {
             start_date='${entity.start_date}',
             end_date='${entity.end_date}',
             manager_id='${entity.manager_id}',
-            teacher_id='${entity.teacher_id}'
+            teacher_id='${entity.teacher_id}',
+            type='${entity.type}',
+            location='${entity.location}'
             where id= ${entity.id}`;
 
             connection.query(query, (err, rows) => {

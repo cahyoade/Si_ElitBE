@@ -41,7 +41,7 @@ class AttendanceService {
                 return;
             }
 
-            const query = `select * from attendances`;
+            const query = `select c.id as class_id, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status from attendances a left join classes c on a.class_id = c.id left join class_types ct on c.type = ct.id`
 
             connection.query(query, (err, rows) => {
                 connection.release();
@@ -58,7 +58,6 @@ class AttendanceService {
     attendByCardId = (cardId) => new Promise(async (resolve, reject) => {
         let newAttendance;
         const currentTime = {date: new Date(), string: moment().format('YYYY-MM-DD HH:mm:ss')};
-        console.log(currentTime);
         
         //get attendance
         this.pool.getConnection((err, connection) => {
@@ -117,12 +116,12 @@ class AttendanceService {
                 return;
             }
 
-            const query = `select * from attendances where user_id = ${userId}`;
+            const query = `select c.id as class_id, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status from attendances a left join classes c on a.class_id = c.id left join class_types ct on c.type = ct.id where user_id = ${userId}`;
 
             connection.query(query, (err, rows) => {
                 connection.release();
                 if (err) {
-                    reject({ msg: "An error occured while trying to query the database." });
+                    reject({ msg: "An error occured while trying to query the database.", err: err });
                     return;
                 }
                 resolve(rows);
@@ -138,7 +137,7 @@ class AttendanceService {
                 return;
             }
 
-            const query = `select * from attendances where class_id = ${classId}`;
+            const query = `select c.id as class_id, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status from attendances a left join classes c on a.class_id = c.id left join class_types ct on c.type = ct.id where class_id = ${classId}`;
 
             connection.query(query, (err, rows) => {
                 connection.release();
@@ -159,7 +158,7 @@ class AttendanceService {
                 return;
             }
 
-            const query = `select * from attendances where user_id=${userId} and class_id = ${classId}`;
+            const query = `select c.id as class_id, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status from attendances a left join classes c on a.class_id = c.id left join class_types ct on c.type = ct.id where user_id=${userId} and class_id = ${classId}`;
 
             connection.query(query, (err, rows) => {
                 connection.release();

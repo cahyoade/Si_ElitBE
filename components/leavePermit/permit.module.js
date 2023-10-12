@@ -8,8 +8,8 @@ class PermitModule {
     constructor(env) {
         this.authService = new AuthService(env);
         this.permitService = new PermitService(env);
-        this.permitController = new PermitController(this.permitService);
-        this.permitRouter = new PermitRouter(this.permitController, this.authService);
+        this.permitController = new PermitController(this.permitService, env);
+        this.permitRouter = new PermitRouter(this.permitController, this.authService, env);
     }
 
     create = () => {

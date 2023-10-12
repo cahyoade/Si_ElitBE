@@ -21,7 +21,7 @@ class AuthService {
             if (err) {
                 return res.status(401).send({ msg: "Invalid token" });
             }
-            if (userData.role == 'admin') {
+            if (userData.role == 3) {
                 req.userData = userData;
                 next();
             }else{
@@ -46,7 +46,7 @@ class AuthService {
             if (err) {
                 return res.status(401).send({ msg: "Invalid token" });
             }
-            if (userData.role == 'admin' || userData.role == 'guru') {
+            if (userData.role == 3|| userData.role == 2) {
                 req.userData = userData;
                 next();
             }else{
@@ -71,7 +71,7 @@ class AuthService {
             if (err) {
                 return res.status(401).send({ msg: "Invalid token" });
             }
-            if (userData.role != 'admin') {
+            if (userData.role != 3) {
                 return res.status(403).end();
             }
             req.userData = userData;
@@ -95,7 +95,7 @@ class AuthService {
             if (err) {
                 return res.status(401).send({ msg: "Invalid token" });
             }
-            if (userData.role == 'admin' || userData.role == 'guru' || userData.role == 'santri') {
+            if (userData.role == 3 || userData.role == 2 || userData.role == 1) {
                 req.userData = userData;
                 next();
             }else{

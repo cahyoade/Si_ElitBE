@@ -8,11 +8,10 @@ class UserRouter {
 
 	getRouter() {
 		const router = express.Router();
-		router.use(this.authService.authorizeAdmin);
-		router.route('/').get(this.userController.getUsers);
-		router.route('/').post(this.userController.createUser);
-		router.route('/').put(this.userController.updateUser);
-		router.route('/').delete(this.userController.deleteUser);
+		router.route('/').get(this.authService.authorizeStudent, this.userController.getUsers);
+		router.route('/').post(this.authService.authorizeAdmin, this.userController.createUser);
+		router.route('/').put(this.authService.authorizeStudent, this.userController.updateUser);
+		router.route('/').delete(this.authService.authorizeAdmin, this.userController.deleteUser);
 		return router;
 	}
 }
