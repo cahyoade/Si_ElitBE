@@ -88,12 +88,12 @@ class UserController {
 		}
 
 		const date = moment(req.body.birth_date).format('YYYY-MM-DD');
-
+		
 		const user = new User(
 			req.body.id,
 			req.body.name,
-			req.body.card_id,
-			req.body.password,
+			req.body.card_id.toUpperCase(),
+			req.body.passwordNew || req.body.password,
 			date,
 			req.body.grade,
 			req.body.telephone_number,
@@ -108,7 +108,7 @@ class UserController {
 		);
 
 		try {
-			const dbResult = await this.userService.updateUser(user, 1);
+			const dbResult = await this.userService.updateUser(user, req.body.passwordNew);
 			return res.status(200).send(dbResult);
 		} catch (err) {
 			return res.status(500).send(err);

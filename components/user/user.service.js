@@ -31,7 +31,7 @@ class UserService {
             connection.query(query, (err, rows) => {
                 connection.release();
                 if (err) {
-                    reject({ msg: "An error occured while trying to query the database." });
+                    reject({ msg: "An error occured while trying to query the database.", err: err });
                     return;
                 }
                 resolve({msg: "User created."})
@@ -51,7 +51,8 @@ class UserService {
             left join roles r
             on u.role = r.id
             left join class_types ct 
-            on u.class_type = ct.id`;
+            on u.class_type = ct.id
+            order by u.nis asc`;
 
             connection.query(query, (err, rows) => {
                 connection.release();

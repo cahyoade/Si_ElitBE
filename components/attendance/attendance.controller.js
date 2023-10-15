@@ -1,3 +1,4 @@
+import moment from "moment";
 import Attendance from "./attendance.entities.js";
 
 class AttendanceController {
@@ -11,6 +12,7 @@ class AttendanceController {
 			req.body.class_id,
 			req.body.attend_at,
 			req.body.status,
+			req.userData.id
 		);
 
 		try {
@@ -56,7 +58,7 @@ class AttendanceController {
 			}
 		}
 		try {
-			const dbResult = await this.attendanceService.getAttendances();
+			const dbResult = await this.attendanceService.getAttendances(req.query.returnAll, req.query.sort, req.query.startDate, req.query.endDate);
 			return res.status(200).send(dbResult);
 		} catch (err) {
 			return res.status(500).send(err);
@@ -64,11 +66,13 @@ class AttendanceController {
 	};
 
 	updateAttendance = async (req, res) => {
+
 		const attendance = new Attendance(
 			req.body.user_id,
 			req.body.class_id,
-			req.body.attend_at,
+			req.body.status ? moment().format("YYYY-MM-DD HH:mm:ss") : null,
 			req.body.status,
+			req.userData.id
 		);
 
 		try {

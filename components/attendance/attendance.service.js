@@ -28,25 +28,38 @@ class AttendanceService {
                     reject({ msg: "An error occured while trying to query the database." });
                     return;
                 }
-                resolve({msg: "Attendance created."});
+                resolve({ msg: "Attendance created." });
             });
         });
 
     });
 
-    getAttendances = () => new Promise((resolve, reject) => {
+    getAttendances = (returnAll, sortByAttend_at, start_date, end_date) => new Promise((resolve, reject) => {
         this.pool.getConnection((err, connection) => {
             if (err) {
                 reject({ msg: "Could not connect to the database." });
                 return;
             }
 
-            const query = `select c.id as class_id, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status from attendances a left join classes c on a.class_id = c.id left join class_types ct on c.type = ct.id`
+            let query;
+
+
+            if (returnAll) {
+                query = `select a.user_id, a.class_id, u2.nis, u2.name, u2.grade, u2.gender, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status, IFNULL(ELT(FIELD(u.role, 1, 2, 3), 'santri', 'guru', 'admin'), 'sistem') as lastEditBy from attendances a left join classes c on a.class_id = c.id left join class_types ct on c.type = ct.id left join users u on a.lastEditBy = u.id join users u2 on a.user_id = u2.id ${sortByAttend_at ? `order by a.attend_at desc` : ''}`;
+            } else if (start_date && end_date) {
+                query = `select a.user_id, a.class_id, u2.nis, u2.name, u2.grade, u2.gender, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status, IFNULL(ELT(FIELD(u.role, 1, 2, 3), 'santri', 'guru', 'admin'), 'sistem') as lastEditBy from attendances a left join classes c on a.class_id = c.id left join class_types ct on c.type = ct.id left join users u on a.lastEditBy = u.id join users u2 on a.user_id = u2.id where c.start_date between '${start_date}' and '${end_date}' ${sortByAttend_at ? `order by a.attend_at desc` : ''}`;
+            } 
+            else if (start_date){
+                query = `select a.user_id, a.class_id, u2.nis, u2.name, u2.grade, u2.gender, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status, IFNULL(ELT(FIELD(u.role, 1, 2, 3), 'santri', 'guru', 'admin'), 'sistem') as lastEditBy from attendances a left join classes c on a.class_id = c.id left join class_types ct on c.type = ct.id left join users u on a.lastEditBy = u.id join users u2 on a.user_id = u2.id where c.start_date > '${start_date}' ${sortByAttend_at ? `order by a.attend_at desc` : ''}`;
+            }
+            else {
+                query = `select a.user_id, a.class_id, u2.nis, u2.name, u2.grade, u2.gender, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status, IFNULL(ELT(FIELD(u.role, 1, 2, 3), 'santri', 'guru', 'admin'), 'sistem') as lastEditBy from attendances a left join classes c on a.class_id = c.id left join class_types ct on c.type = ct.id left join users u on a.lastEditBy = u.id join users u2 on a.user_id = u2.id where c.start_date > date_sub(now(), interval 6 month) ${sortByAttend_at ? `order by a.attend_at desc` : ''}`;
+            }
 
             connection.query(query, (err, rows) => {
                 connection.release();
                 if (err) {
-                    reject({ msg: "An error occured while trying to query the database." });
+                    reject({ msg: "An error occured while trying to query the database."});
                     return;
                 }
                 resolve(rows);
@@ -57,15 +70,15 @@ class AttendanceService {
 
     attendByCardId = (cardId) => new Promise(async (resolve, reject) => {
         let newAttendance;
-        const currentTime = {date: new Date(), string: moment().format('YYYY-MM-DD HH:mm:ss')};
-        
+        const currentTime = { date: new Date(), string: moment().format('YYYY-MM-DD HH:mm:ss') };
+
         //get attendance
         this.pool.getConnection((err, connection) => {
             if (err) {
                 reject('koneksi database gagal.');
                 return;
             }
-            
+
             const query = `select user_id, class_id, start_date, status from attendances a left join classes c
             on a.class_id = c.id
             left join users u
@@ -79,12 +92,12 @@ class AttendanceService {
                     reject(`Query database gagal.`);
                     return;
                 }
-                if(!rows[0]){
+                if (!rows[0]) {
                     reject(`kelas tidak ditemukan.`);
                     return;
                 }
 
-                if(rows[0].status != null){
+                if (rows[0].status != null) {
                     reject(`anda sudah presensi.`);
                     return;
                 }
@@ -93,20 +106,21 @@ class AttendanceService {
                     rows[0].user_id,
                     rows[0].class_id,
                     currentTime.string,
-                    currentTime.date > moment(new Date(rows[0].start_date)).add(+this.env.toleransiTerlambatMenit, 'm').toDate() ? 'terlambat' : 'hadir'
-                );
+                    currentTime.date > moment(new Date(rows[0].start_date)).add(+this.env.toleransiTerlambatMenit, 'm').toDate() ? 'terlambat' : 'hadir',
+                    rows[0].user_id
+                ); s
 
-                try{
+                try {
                     const result = await this.updateAttendance(newAttendance);
                     resolve(newAttendance.status);
-                }catch(err){
+                } catch (err) {
                     reject(JSON.stringify(err));
                 }
             });
         });
 
-        
-        
+
+
     })
 
     getAttendancesByUser = (userId) => new Promise((resolve, reject) => {
@@ -116,7 +130,7 @@ class AttendanceService {
                 return;
             }
 
-            const query = `select c.id as class_id, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status from attendances a left join classes c on a.class_id = c.id left join class_types ct on c.type = ct.id where user_id = ${userId}`;
+            const query = `select a.user_id, a.class_id, u2.nis, u2.name, u2.grade, u2.gender, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status, IFNULL(ELT(FIELD(u.role, 1, 2, 3), 'santri', 'guru', 'admin'), 'sistem') as lastEditBy from attendances a left join classes c on a.class_id = c.id left join class_types ct on c.type = ct.id left join users u on a.lastEditBy = u.id join users u2 on a.user_id = u2.id where a.user_id = ${userId}`;
 
             connection.query(query, (err, rows) => {
                 connection.release();
@@ -137,7 +151,7 @@ class AttendanceService {
                 return;
             }
 
-            const query = `select c.id as class_id, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status from attendances a left join classes c on a.class_id = c.id left join class_types ct on c.type = ct.id where class_id = ${classId}`;
+            const query = `select a.user_id, a.class_id, u2.nis, u2.name, u2.grade, u2.gender, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status, IFNULL(ELT(FIELD(u.role, 1, 2, 3), 'santri', 'guru', 'admin'), 'sistem') as lastEditBy from attendances a left join classes c on a.class_id = c.id left join class_types ct on c.type = ct.id left join users u on a.lastEditBy = u.id join users u2 on a.user_id = u2.id where a.class_id = ${classId}`;
 
             connection.query(query, (err, rows) => {
                 connection.release();
@@ -158,7 +172,7 @@ class AttendanceService {
                 return;
             }
 
-            const query = `select c.id as class_id, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status from attendances a left join classes c on a.class_id = c.id left join class_types ct on c.type = ct.id where user_id=${userId} and class_id = ${classId}`;
+            const query = `select a.user_id, a.class_id, u2.nis, u2.name, u2.grade, u2.gender, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status, IFNULL(ELT(FIELD(u.role, 1, 2, 3), 'santri', 'guru', 'admin'), 'sistem') as lastEditBy from attendances a left join classes c on a.class_id = c.id left join class_types ct on c.type = ct.id left join users u on a.lastEditBy = u.id join users u2 on a.user_id = u2.id where a.user_id=${userId} and a.class_id = ${classId}`;
 
             connection.query(query, (err, rows) => {
                 connection.release();
@@ -173,7 +187,7 @@ class AttendanceService {
     );
 
     updateAttendance = (attendance) => new Promise((resolve, reject) => {
-        
+
         this.pool.getConnection((err, connection) => {
             if (err) {
                 reject({ msg: "Could not connect to the database." });
@@ -181,16 +195,17 @@ class AttendanceService {
             }
 
             const query = `update attendances set 
-            attend_at='${attendance.attend_at}',
-            status='${attendance.status}'
+            attend_at=${attendance.attend_at ? `'${attendance.attend_at}'` : null},
+            status=${attendance.status ? `'${attendance.status}'` : null},
+            lastEditby=${attendance.lastEditby}
             where
-            user_id='${attendance.user_id}' and
-            class_id='${attendance.class_id}'`;
+            user_id=${attendance.user_id} and
+            class_id=${attendance.class_id}`;
 
             connection.query(query, (err, rows) => {
                 connection.release();
                 if (err) {
-                    reject({ msg: "An error occured while trying to query the database."});
+                    reject({ msg: "An error occured while trying to query the database.", err: err });
                     return;
                 }
                 resolve({ msg: "Attendance updated." });
@@ -211,7 +226,7 @@ class AttendanceService {
             connection.query(query, (err, rows) => {
                 connection.release();
                 if (err) {
-                    reject({ msg: "An error occured while trying to query the database."});
+                    reject({ msg: "An error occured while trying to query the database." });
                     return;
                 }
                 resolve({ msg: "Attendance deleted." });

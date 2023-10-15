@@ -19,7 +19,7 @@ class AuthController {
 
             if(auth){
                 const userInfo = {...dbResult[0]};
-                const accessToken = jwt.sign(userInfo, this.env.secret, {expiresIn: '12h'});
+                const accessToken = jwt.sign(userInfo, this.env.secret, {expiresIn: this.env.tokenExpireTimeHours + 'h'});
                 return res.status(200).send({msg: 'logged in', accessToken: accessToken});
             }
             

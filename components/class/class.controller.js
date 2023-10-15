@@ -41,6 +41,15 @@ class ClassController {
 		}
 	};
 
+	getClassTypes = async (req, res) => {
+		try{
+			const dbResult = await this.classService.getClassTypes();
+			return res.status(200).send(dbResult);
+		}catch(err){
+			return res.status(500).send(err);
+		}
+	};
+
 	getUpcomingClass = async (req, res) => {
 		try{
 			const dbResult = await this.classService.getUpcomingClasses();

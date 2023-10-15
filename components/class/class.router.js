@@ -10,6 +10,7 @@ class ClassRouter {
 		const router = express.Router();
 		router.route('/').get(this.authService.authorizeStudent, this.classController.getClass);
 		router.route('/upcoming').get(this.classController.getUpcomingClass);
+		router.route('/types').get(this.classController.getClassTypes);
 		router.route('/').post(this.authService.authorizeAdmin, this.classController.createClass);
 		router.route('/').put(this.authService.authorizeAdmin, this.classController.updateClass);
 		router.route('/').delete(this.authService.authorizeAdmin, this.classController.deleteClass);

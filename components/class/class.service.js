@@ -55,6 +55,27 @@ class ClassService {
     }
     );
 
+    getClassTypes = () => new Promise((resolve, reject) => {
+        this.pool.getConnection((err, connection) => {
+            if (err) {
+                reject({ msg: "Could not connect to the database." });
+                return;
+            }
+
+            const query = `select * from class_types`;
+
+            connection.query(query, (err, rows) => {
+                connection.release();
+                if (err) {
+                    reject({ msg: "An error occured while trying to query the database." });
+                    return;
+                }
+                resolve(rows);
+            });
+        });
+    }
+    );
+
     getUpcomingClasses = () => new Promise((resolve, reject) => {
         this.pool.getConnection((err, connection) => {
             if (err) {

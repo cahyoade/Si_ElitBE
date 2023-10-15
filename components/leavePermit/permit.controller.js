@@ -1,10 +1,13 @@
 import Permit from "./permit.entities.js";
+import Attendance from "../attendance/attendance.entities.js";
+import moment from "moment";
 import fs from "fs";
 
 
 class PermitController {
-	constructor(permitService, env) {
+	constructor(permitService, attendanceService, env) {
 		this.permitService = permitService;
+		this.attendanceService = attendanceService;
 		this.env = env;
 	}
 
@@ -59,7 +62,7 @@ class PermitController {
 			}
 		}
 		try{
-			const dbResult = await this.permitService.getPermits();
+			const dbResult = await this.permitService.getPermits(req.query.returnAll, req.query.startDate, req.query.endDate);
 			return res.status(200).send(dbResult);
 		}catch(err){
 			return res.status(500).send(err);
@@ -90,7 +93,17 @@ class PermitController {
 			req.body.img_url,
 			req.body.isApproved,
 		);
+
+		const attendance = new Attendance(
+			req.body.user_id,
+			req.body.class_id,
+			moment().format("YYYY-MM-DD HH:mm:ss"),
+			'izin',
+			req.userData.id
+		);
+
 		try{
+			await this.attendanceService.updateAttendance(attendance);
 			const dbResult = await this.permitService.updatePermit(permit);
 			return res.status(200).send(dbResult);
 		}catch(err){
