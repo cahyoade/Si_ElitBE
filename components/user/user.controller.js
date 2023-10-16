@@ -8,12 +8,21 @@ class UserController {
 	}
 
 	createUser = async (req, res) => {
+
+		const date = moment(req.body.birth_date).format('YYYY-MM-DD');
+		let card_id;
+		try	{
+			card_id = req.body.card_id.toUpperCase();
+		}catch(err){
+			card_id = null;
+		}
+
 		const user = new User(
 			req.body.id,
 			req.body.name,
-			req.body.card_id,
+			card_id,
 			req.body.password,
-			req.body.birth_date,
+			date,
 			req.body.grade,
 			req.body.telephone_number,
 			req.body.role,
@@ -88,11 +97,17 @@ class UserController {
 		}
 
 		const date = moment(req.body.birth_date).format('YYYY-MM-DD');
+		let card_id;
+		try	{
+			card_id = req.body.card_id.toUpperCase();
+		}catch(err){
+			card_id = null;
+		}
 		
 		const user = new User(
 			req.body.id,
 			req.body.name,
-			req.body.card_id.toUpperCase(),
+			card_id,
 			req.body.passwordNew || req.body.password,
 			date,
 			req.body.grade,

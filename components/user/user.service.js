@@ -20,18 +20,21 @@ class UserService {
             return;
         });
 
-
         this.pool.getConnection((err, connection) => {
             if (err) {
                 reject({ msg: "Could not connect to the database." });
                 return;
             }
-            const query = `insert into users( name, card_id, password, birth_date, grade, telephone_number, role, nis, is_active, inactive_reason, gender, class_type, origin, residence_in_semarang) values ('${user.name}','${user.card_id}', '${hashedPassword}', '${user.birth_date}', '${user.grade}', '${user.telephone_number}', '${user.role}', '${user.nis}', '${user.is_active}', '${user.inactive_reason}', '${user.gender}', '${user.class_type}', '${user.origin}', '${user.residence_in_semarang}')`;
+            const query = `insert into users( name, card_id, password, birth_date, grade, telephone_number, role, nis, is_active, inactive_reason, gender, class_type, origin, residence_in_semarang) values ('${user.name}',${user.card_id ? `'${user.card_id}'` : null}, '${hashedPassword}', '${user.birth_date}', ${user.grade ? `'${user.grade}'` : null}, '${user.telephone_number}', '${user.role}', ${user.nis ? `'${user.nis}'` : null}, ${user.is_active ? `'${user.is_active}'` : null}, ${user.inactive_reason ? `'${user.inactive_reason}'` : null}, ${user.gender}, ${user.class_type ? `'${user.class_type}'` : null}, ${user.origin ? `'${user.origin}'` : null}, ${user.residence_in_semarang ? `'${user.residence_in_semarang}'` : null})`;
 
             connection.query(query, (err, rows) => {
                 connection.release();
                 if (err) {
-                    reject({ msg: "An error occured while trying to query the database.", err: err });
+                    if(err.code === "ER_DUP_ENTRY"){
+                        reject({ msg: "User dengan nama atau card_id tersebut sudah ada."});
+                        return;
+                    }
+                    reject({ msg: "An error occured while trying to query the database."});
                     return;
                 }
                 resolve({msg: "User created."})
@@ -131,25 +134,29 @@ class UserService {
 
             const query = `update users set 
             name='${user.name}',
-            card_id='${user.card_id}',
+            card_id=${user.card_id ? `'${user.card_id}'` : null},
             password='${withUpdatePassword ? hashedPassword : user.password}',
             birth_date='${user.birth_date}',
-            grade='${user.grade}',
+            grade=${user.grade ? `'${user.grade}'` : null},
             telephone_number='${user.telephone_number}',
             role='${user.role}',
-            nis='${user.nis}',
-            is_active='${user.is_active}',
-            inactive_reason='${user.inactive_reason}',
+            nis=${user.nis ? `'${user.nis}'` : null},
+            is_active=${user.is_active ? `'${user.is_active}'` : null},
+            inactive_reason=${user.inactive_reason ? `'${user.inactive_reason}'` : null},
             gender='${user.gender}',
-            class_type='${user.class_type}',
-            origin='${user.origin}',
-            residence_in_semarang ='${user.residence_in_semarang}'
+            class_type=${user.class_type ? `'${user.class_type}'` : null},
+            origin=${user.origin ? `'${user.origin}'` : null},
+            residence_in_semarang =${user.residence_in_semarang ? `'${user.residence_in_semarang}'` : null}
             where id= ${user.id}
             `;
 
             connection.query(query, (err, rows) => {
                 connection.release();
                 if (err) {
+                    if(err.code === "ER_DUP_ENTRY"){
+                        reject({ msg: "User dengan nama atau card_id tersebut sudah ada."});
+                        return;
+                    }
                     reject({ msg: "An error occured while trying to query the database.", err: err});
                     return;
                 }

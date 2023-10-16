@@ -41,7 +41,7 @@ class ClassService {
                 return;
             }
 
-            const query = `select c.*, ct.name as type_name from classes c left join class_types ct on c.type = ct.id`;
+            const query = `select * from classes`;
 
             connection.query(query, (err, rows) => {
                 connection.release();
@@ -131,7 +131,6 @@ class ClassService {
             end_date='${entity.end_date}',
             manager_id='${entity.manager_id}',
             teacher_id='${entity.teacher_id}',
-            type='${entity.type}',
             location='${entity.location}'
             where id= ${entity.id}`;
 
