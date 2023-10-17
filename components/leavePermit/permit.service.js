@@ -45,16 +45,16 @@ class PermitService {
             let query;
 
             if (returnAll) {
-                query = `select u.id as user_id, u.nis, u.name, c.id as class_id, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, p.description, p.is_approved, p.img_url from leave_permits p left join classes c on p.class_id = c.id left join class_types ct on c.type = ct.id left join users u on p.user_id = u.id order by p.is_approved asc, c.start_date desc`;
+                query = `select u.id as user_id, u.nis, u.name, c.id as class_id, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, p.description, p.is_approved, p.img_url from leave_permits p left join classes c on p.class_id = c.id left join users u on p.user_id = u.id left join class_types ct on u.class_type = ct.id order by p.is_approved asc, c.start_date desc`;
 
             } else if (start_date && end_date) {
-                query = `select u.id as user_id, u.nis, u.name, c.id as class_id, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, p.description, p.is_approved, p.img_url from leave_permits p left join classes c on p.class_id = c.id left join class_types ct on c.type = ct.id left join users u on p.user_id = u.id where c.start_date between '${start_date}' and '${end_date}' order by p.is_approved asc, c.start_date desc`;
+                query = `select u.id as user_id, u.nis, u.name, c.id as class_id, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, p.description, p.is_approved, p.img_url from leave_permits p left join classes c on p.class_id = c.id left join users u on p.user_id = u.id left join class_types ct on u.class_type = ct.id where c.start_date between '${start_date}' and '${end_date}' order by p.is_approved asc, c.start_date desc`;
             } 
             else if (start_date){
-                query = `select u.id as user_id, u.nis, u.name, c.id as class_id, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, p.description, p.is_approved, p.img_url from leave_permits p left join classes c on p.class_id = c.id left join class_types ct on c.type = ct.id left join users u on p.user_id = u.id where c.start_date > '${start_date}' order by p.is_approved asc, c.start_date desc`;
+                query = `select u.id as user_id, u.nis, u.name, c.id as class_id, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, p.description, p.is_approved, p.img_url from leave_permits p left join classes c on p.class_id = c.id left join users u on p.user_id = u.id left join class_types ct on u.class_type = ct.id where c.start_date > '${start_date}' order by p.is_approved asc, c.start_date desc`;
             }
             else {
-                query = `select u.id as user_id, u.nis, u.name, c.id as class_id, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, p.description, p.is_approved, p.img_url from leave_permits p left join classes c on p.class_id = c.id left join class_types ct on c.type = ct.id left join users u on p.user_id = u.id where c.start_date > date_sub(now(), interval 6 month) order by p.is_approved asc, c.start_date desc`;
+                query = `select u.id as user_id, u.nis, u.name, c.id as class_id, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, p.description, p.is_approved, p.img_url from leave_permits p left join classes c on p.class_id = c.id left join users u on p.user_id = u.id left join class_types ct on u.class_type = ct.id where c.start_date > date_sub(now(), interval 6 month) order by p.is_approved asc, c.start_date desc`;
             }
 
             connection.query(query, (err, rows) => {
@@ -75,7 +75,7 @@ class PermitService {
                 reject({ msg: "Could not connect to the database." });
                 return;
             }
-            const query = `select u.nis, u.name, c.id as class_id, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, p.description, p.is_approved, p.img_url from leave_permits p left join classes c on p.class_id = c.id left join class_types ct on c.type = ct.id left join users u on p.user_id = u.id where p.user_id = ${userId}`;
+            const query = `select u.nis, u.name, c.id as class_id, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, p.description, p.is_approved, p.img_url from leave_permits p left join classes c on p.class_id = c.id left join users u on p.user_id = u.id left join class_types ct on u.class_type = ct.id where p.user_id = ${userId}`;
 
             connection.query(query, (err, rows) => {
                 connection.release();
@@ -96,7 +96,7 @@ class PermitService {
                 return;
             }
 
-            const query = `select u.nis, u.name, c.id as class_id, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, p.description, p.is_approved, p.img_url from leave_permits p left join classes c on p.class_id = c.id left join class_types ct on c.type = ct.id left join users u on p.user_id = u.id where p.class_id = ${classId}`;
+            const query = `select u.nis, u.name, c.id as class_id, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, p.description, p.is_approved, p.img_url from leave_permits p left join classes c on p.class_id = c.id left join users u on p.user_id = u.id left join class_types ct on u.class_type = ct.id where p.class_id = ${classId}`;
 
             connection.query(query, (err, rows) => {
                 connection.release();
@@ -117,7 +117,7 @@ class PermitService {
                 return;
             }
 
-            const query = `select u.nis, u.name, c.id as class_id, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, p.description, p.is_approved, p.img_url from leave_permits p left join classes c on p.class_id = c.id left join class_types ct on c.type = ct.id left join users u on p.user_id = u.id where p.user_id=${userId} and p.class_id = ${classId}`;
+            const query = `select u.nis, u.name, c.id as class_id, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, p.description, p.is_approved, p.img_url from leave_permits p left join classes c on p.class_id = c.id left join users u on p.user_id = u.id left join class_types ct on u.class_type = ct.id where p.user_id=${userId} and p.class_id = ${classId}`;
 
             connection.query(query, (err, rows) => {
                 connection.release();

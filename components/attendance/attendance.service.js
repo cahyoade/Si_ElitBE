@@ -45,15 +45,15 @@ class AttendanceService {
 
 
             if (returnAll) {
-                query = `select a.user_id, a.class_id, u2.nis, u2.name, u2.grade, u2.gender, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status, IFNULL(ELT(FIELD(u.role, 1, 2, 3), 'santri', 'guru', 'admin'), 'sistem') as lastEditBy from attendances a left join classes c on a.class_id = c.id left join class_types ct on c.type = ct.id left join users u on a.lastEditBy = u.id join users u2 on a.user_id = u2.id ${sortByAttend_at ? `order by a.attend_at desc` : ''}`;
+                query = `select a.user_id, a.class_id, u2.nis, u2.name, u2.grade, u2.gender, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status, IFNULL(ELT(FIELD(u.role, 1, 2, 3), 'santri', 'guru', 'admin'), 'sistem') as lastEditBy from attendances a left join classes c on a.class_id = c.id  left join users u on a.lastEditBy = u.id join users u2 on a.user_id = u2.id left join class_types ct on u2.class_type = ct.id ${sortByAttend_at ? `order by a.attend_at desc` : ''}`;
             } else if (start_date && end_date) {
-                query = `select a.user_id, a.class_id, u2.nis, u2.name, u2.grade, u2.gender, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status, IFNULL(ELT(FIELD(u.role, 1, 2, 3), 'santri', 'guru', 'admin'), 'sistem') as lastEditBy from attendances a left join classes c on a.class_id = c.id left join class_types ct on c.type = ct.id left join users u on a.lastEditBy = u.id join users u2 on a.user_id = u2.id where c.start_date between '${start_date}' and '${end_date}' ${sortByAttend_at ? `order by a.attend_at desc` : ''}`;
+                query = `select a.user_id, a.class_id, u2.nis, u2.name, u2.grade, u2.gender, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status, IFNULL(ELT(FIELD(u.role, 1, 2, 3), 'santri', 'guru', 'admin'), 'sistem') as lastEditBy from attendances a left join classes c on a.class_id = c.id  left join users u on a.lastEditBy = u.id join users u2 on a.user_id = u2.id left join class_types ct on u2.class_type = ct.id where c.start_date between '${start_date}' and '${end_date}' ${sortByAttend_at ? `order by a.attend_at desc` : ''}`;
             } 
             else if (start_date){
-                query = `select a.user_id, a.class_id, u2.nis, u2.name, u2.grade, u2.gender, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status, IFNULL(ELT(FIELD(u.role, 1, 2, 3), 'santri', 'guru', 'admin'), 'sistem') as lastEditBy from attendances a left join classes c on a.class_id = c.id left join class_types ct on c.type = ct.id left join users u on a.lastEditBy = u.id join users u2 on a.user_id = u2.id where c.start_date > '${start_date}' ${sortByAttend_at ? `order by a.attend_at desc` : ''}`;
+                query = `select a.user_id, a.class_id, u2.nis, u2.name, u2.grade, u2.gender, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status, IFNULL(ELT(FIELD(u.role, 1, 2, 3), 'santri', 'guru', 'admin'), 'sistem') as lastEditBy from attendances a left join classes c on a.class_id = c.id  left join users u on a.lastEditBy = u.id join users u2 on a.user_id = u2.id left join class_types ct on u2.class_type = ct.id where c.start_date > '${start_date}' ${sortByAttend_at ? `order by a.attend_at desc` : ''}`;
             }
             else {
-                query = `select a.user_id, a.class_id, u2.nis, u2.name, u2.grade, u2.gender, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status, IFNULL(ELT(FIELD(u.role, 1, 2, 3), 'santri', 'guru', 'admin'), 'sistem') as lastEditBy from attendances a left join classes c on a.class_id = c.id left join class_types ct on c.type = ct.id left join users u on a.lastEditBy = u.id join users u2 on a.user_id = u2.id where c.start_date > date_sub(now(), interval 6 month) ${sortByAttend_at ? `order by a.attend_at desc` : ''}`;
+                query = `select a.user_id, a.class_id, u2.nis, u2.name, u2.grade, u2.gender, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status, IFNULL(ELT(FIELD(u.role, 1, 2, 3), 'santri', 'guru', 'admin'), 'sistem') as lastEditBy from attendances a left join classes c on a.class_id = c.id  left join users u on a.lastEditBy = u.id join users u2 on a.user_id = u2.id left join class_types ct on u2.class_type = ct.id where c.start_date > date_sub(now(), interval 6 month) ${sortByAttend_at ? `order by a.attend_at desc` : ''}`;
             }
 
             connection.query(query, (err, rows) => {
@@ -79,7 +79,7 @@ class AttendanceService {
                 return;
             }
 
-            const query = `select user_id, class_id, start_date, status from attendances a left join classes c
+            const query = `select a.user_id, a.class_id, c.start_date, a.status, u.name, u.grade from attendances a left join classes c
             on a.class_id = c.id
             left join users u
             on a.user_id = u.id
@@ -108,11 +108,11 @@ class AttendanceService {
                     currentTime.string,
                     currentTime.date > moment(new Date(rows[0].start_date)).add(+this.env.toleransiTerlambatMenit, 'm').toDate() ? 'terlambat' : 'hadir',
                     rows[0].user_id
-                ); s
+                );
 
                 try {
                     const result = await this.updateAttendance(newAttendance);
-                    resolve(newAttendance.status);
+                    resolve(`${cardId},${rows[0].name.split(' ')[0]} ${rows[0].grade},${moment().format('h:mm')}`);
                 } catch (err) {
                     reject(JSON.stringify(err));
                 }
@@ -130,7 +130,7 @@ class AttendanceService {
                 return;
             }
 
-            const query = `select a.user_id, a.class_id, u2.nis, u2.name, u2.grade, u2.gender, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status, IFNULL(ELT(FIELD(u.role, 1, 2, 3), 'santri', 'guru', 'admin'), 'sistem') as lastEditBy from attendances a left join classes c on a.class_id = c.id left join class_types ct on c.type = ct.id left join users u on a.lastEditBy = u.id join users u2 on a.user_id = u2.id where a.user_id = ${userId}`;
+            const query = `select a.user_id, a.class_id, u2.nis, u2.name, u2.grade, u2.gender, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status, IFNULL(ELT(FIELD(u.role, 1, 2, 3), 'santri', 'guru', 'admin'), 'sistem') as lastEditBy from attendances a left join classes c on a.class_id = c.id left join users u on a.lastEditBy = u.id join users u2 on a.user_id = u2.id left join class_types ct on u2.class_type = ct.id where a.user_id = ${userId}`;
 
             connection.query(query, (err, rows) => {
                 connection.release();
@@ -151,7 +151,7 @@ class AttendanceService {
                 return;
             }
 
-            const query = `select a.user_id, a.class_id, u2.nis, u2.name, u2.grade, u2.gender, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status, IFNULL(ELT(FIELD(u.role, 1, 2, 3), 'santri', 'guru', 'admin'), 'sistem') as lastEditBy from attendances a left join classes c on a.class_id = c.id left join class_types ct on c.type = ct.id left join users u on a.lastEditBy = u.id join users u2 on a.user_id = u2.id where a.class_id = ${classId}`;
+            const query = `select a.user_id, a.class_id, u2.nis, u2.name, u2.grade, u2.gender, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status, IFNULL(ELT(FIELD(u.role, 1, 2, 3), 'santri', 'guru', 'admin'), 'sistem') as lastEditBy from attendances a left join classes c on a.class_id = c.id left join users u on a.lastEditBy = u.id left join class_types ct on u.class_type = ct.id join users u2 on a.user_id = u2.id where a.class_id = ${classId}`;
 
             connection.query(query, (err, rows) => {
                 connection.release();
@@ -172,7 +172,7 @@ class AttendanceService {
                 return;
             }
 
-            const query = `select a.user_id, a.class_id, u2.nis, u2.name, u2.grade, u2.gender, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status, IFNULL(ELT(FIELD(u.role, 1, 2, 3), 'santri', 'guru', 'admin'), 'sistem') as lastEditBy from attendances a left join classes c on a.class_id = c.id left join class_types ct on c.type = ct.id left join users u on a.lastEditBy = u.id join users u2 on a.user_id = u2.id where a.user_id=${userId} and a.class_id = ${classId}`;
+            const query = `select a.user_id, a.class_id, u2.nis, u2.name, u2.grade, u2.gender, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status, IFNULL(ELT(FIELD(u.role, 1, 2, 3), 'santri', 'guru', 'admin'), 'sistem') as lastEditBy from attendances a left join classes c on a.class_id = c.id left join users u on a.lastEditBy = u.id left join class_types ct on u.class_type = ct.id join users u2 on a.user_id = u2.id where a.user_id=${userId} and a.class_id = ${classId}`;
 
             connection.query(query, (err, rows) => {
                 connection.release();

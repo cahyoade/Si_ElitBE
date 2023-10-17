@@ -17,7 +17,7 @@ class MqttService {
         });
         setInterval(this.ping, +this.env.pingIntervalSeconds * 1000);
         this.client.on('message', (topic, payload) => {
-            const [type, data] = payload.toString().split(' ');
+            const [type, data] = payload.toString().split(',');
 
             if(data && type === 'req_att'){
                 this.setStatus(topic, true);
@@ -37,9 +37,9 @@ class MqttService {
     handleAttendance = async (topic, cardId) => {
         try{
             const result = await this.attendanceService.attendByCardId(cardId);
-            this.client.publish(topic, `res_att ${result}`);
+            this.client.publish(topic, `res_att,1,${result}`);
         }catch(err){
-            this.client.publish(topic, `res_att Presensi gagal, ${err}`);
+            this.client.publish(topic, `res_att,0,${err}`);
         }
     }
 
