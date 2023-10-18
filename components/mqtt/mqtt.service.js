@@ -15,6 +15,9 @@ class MqttService {
             });
             console.log('mqtt connected');
         });
+        this.client.on('close', () => {
+            console.log('mqtt disconnected');
+        })
         setInterval(this.ping, +this.env.pingIntervalSeconds * 1000);
         this.client.on('message', (topic, payload) => {
             const [type, data] = payload.toString().split(',');

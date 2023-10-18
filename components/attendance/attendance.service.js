@@ -34,6 +34,47 @@ class AttendanceService {
 
     });
 
+    createAttendance = (classId) => new Promise(async (resolve, reject) => {
+        
+        this.pool.getConnection((err, connection) => {
+            if (err) {
+                reject({ msg: "Could not connect to the database." });
+                return;
+            }
+
+            let query = `select id, role from users`;
+
+            connection.query(query, (err, rows) => {
+                if (err) {
+                    reject({ msg: "An error occured while trying to query the database." });
+                    return;
+                }
+                
+                query = `replace into attendances( user_id, class_id) values `;
+                
+                rows.map(row => {
+                    if(row.role === 1){
+                        query += `(${row.id}, ${classId}),`;
+                    }
+                });
+                
+
+                connection.query(query.slice(0, -1), (err, rows) => {
+                    connection.release();
+                    if (err) {
+                        reject({ msg: "An error occured while trying to query the database." });
+                        return;
+                    }
+                    resolve({ msg: "Attendance created." });
+                });
+            });
+        });
+    });
+
+
+
+
+
     getAttendances = (returnAll, sortByAttend_at, start_date, end_date) => new Promise((resolve, reject) => {
         this.pool.getConnection((err, connection) => {
             if (err) {

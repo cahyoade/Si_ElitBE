@@ -1,8 +1,9 @@
 import Class from "./class.entities.js";
 
 class ClassController {
-	constructor(classService) {
+	constructor(classService, attendanceService) {
 		this.classService = classService;
+		this.attendanceService = attendanceService;
 	}
 
 	createClass = async (req, res) => {
@@ -18,7 +19,8 @@ class ClassController {
 
 		try{
 			const dbResult = await this.classService.addClass(entity);
-			return res.status(200).send(dbResult);
+			await this.attendanceService.createAttendance(dbResult.insertId);
+			return res.status(200).send({msg: dbResult.msg});
 		}catch(err){
 			return res.status(500).send(err);
 		}
@@ -28,6 +30,22 @@ class ClassController {
 		if(req.query.classId){
 			try{
 				const dbResult = await this.classService.getClass(req.query.classId);
+				return res.status(200).send(dbResult);
+			}catch(err){
+				return res.status(500).send(err);
+			}
+		}
+		if(req.query.managerId){
+			try{
+				const dbResult = await this.classService.getClassesByManagerId(req.query.managerId);
+				return res.status(200).send(dbResult);
+			}catch(err){
+				return res.status(500).send(err);
+			}
+		}
+		if(req.query.teacherId){
+			try{
+				const dbResult = await this.classService.getClassesByTeacherId(req.query.teacherId);
 				return res.status(200).send(dbResult);
 			}catch(err){
 				return res.status(500).send(err);

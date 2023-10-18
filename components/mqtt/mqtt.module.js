@@ -19,6 +19,11 @@ class MqttModule {
     }
     getRouter = () => this.mqttRouter.getRouter();
 
+    create = () => {
+        this.startService();
+        return {router : this.getRouter()}
+    };
+
 }
 
 export default MqttModule;

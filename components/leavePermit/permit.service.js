@@ -35,7 +35,7 @@ class PermitService {
 
     });
 
-    getPermits = (returnAll, start_date, end_date) => new Promise((resolve, reject) => {
+    getPermits = (returnAll, start_date, end_date, userRole, userId) => new Promise((resolve, reject) => {
         this.pool.getConnection((err, connection) => {
             if (err) {
                 reject({ msg: "Could not connect to the database." });
@@ -44,17 +44,17 @@ class PermitService {
 
             let query;
 
-            if (returnAll) {
+            if (returnAll && userRole === 3) {
                 query = `select u.id as user_id, u.nis, u.name, c.id as class_id, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, p.description, p.is_approved, p.img_url from leave_permits p left join classes c on p.class_id = c.id left join users u on p.user_id = u.id left join class_types ct on u.class_type = ct.id order by p.is_approved asc, c.start_date desc`;
 
             } else if (start_date && end_date) {
-                query = `select u.id as user_id, u.nis, u.name, c.id as class_id, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, p.description, p.is_approved, p.img_url from leave_permits p left join classes c on p.class_id = c.id left join users u on p.user_id = u.id left join class_types ct on u.class_type = ct.id where c.start_date between '${start_date}' and '${end_date}' order by p.is_approved asc, c.start_date desc`;
+                query = `select u.id as user_id, u.nis, u.name, c.id as class_id, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, p.description, p.is_approved, p.img_url from leave_permits p left join classes c on p.class_id = c.id left join users u on p.user_id = u.id left join class_types ct on u.class_type = ct.id where c.start_date between '${start_date}' and '${end_date}' ${userRole == 2 ? 'and c.teacher_id = ' + userId : ''} order by p.is_approved asc, c.start_date desc`;
             } 
             else if (start_date){
-                query = `select u.id as user_id, u.nis, u.name, c.id as class_id, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, p.description, p.is_approved, p.img_url from leave_permits p left join classes c on p.class_id = c.id left join users u on p.user_id = u.id left join class_types ct on u.class_type = ct.id where c.start_date > '${start_date}' order by p.is_approved asc, c.start_date desc`;
+                query = `select u.id as user_id, u.nis, u.name, c.id as class_id, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, p.description, p.is_approved, p.img_url from leave_permits p left join classes c on p.class_id = c.id left join users u on p.user_id = u.id left join class_types ct on u.class_type = ct.id where c.start_date > '${start_date}' ${userRole == 2 ? 'and c.teacher_id = ' + userId : ''} order by p.is_approved asc, c.start_date desc`;
             }
             else {
-                query = `select u.id as user_id, u.nis, u.name, c.id as class_id, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, p.description, p.is_approved, p.img_url from leave_permits p left join classes c on p.class_id = c.id left join users u on p.user_id = u.id left join class_types ct on u.class_type = ct.id where c.start_date > date_sub(now(), interval 6 month) order by p.is_approved asc, c.start_date desc`;
+                query = `select u.id as user_id, u.nis, u.name, c.id as class_id, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, p.description, p.is_approved, p.img_url from leave_permits p left join classes c on p.class_id = c.id left join users u on p.user_id = u.id left join class_types ct on u.class_type = ct.id where c.start_date > date_sub(now(), interval 6 month) ${userRole == 2 ? 'and c.teacher_id = ' + userId : ''} order by p.is_approved asc, c.start_date desc`;
             }
 
             connection.query(query, (err, rows) => {

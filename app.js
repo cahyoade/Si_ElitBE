@@ -25,8 +25,7 @@ class App {
         this.app.use('/classes', this.classModule.create().router);
         this.app.use('/attendances', this.attendanceModule.create().router);
         this.app.use('/auth', this.authModule.create().router);
-        this.app.use('/mqtt', this.mqttModule.getRouter());
-        this.mqttModule.startService();
+        this.app.use('/mqtt', this.mqttModule.create().router);
     }
 
     create = () => this.app;

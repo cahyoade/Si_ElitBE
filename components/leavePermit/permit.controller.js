@@ -62,7 +62,7 @@ class PermitController {
 			}
 		}
 		try{
-			const dbResult = await this.permitService.getPermits(req.query.returnAll, req.query.startDate, req.query.endDate);
+			const dbResult = await this.permitService.getPermits(req.query.returnAll, req.query.startDate, req.query.endDate, req.userData.role, req.userData.id);
 			return res.status(200).send(dbResult);
 		}catch(err){
 			return res.status(500).send(err);

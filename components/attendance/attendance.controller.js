@@ -2,8 +2,9 @@ import moment from "moment";
 import Attendance from "./attendance.entities.js";
 
 class AttendanceController {
-	constructor(attendanceService) {
+	constructor(attendanceService, classService) {
 		this.attendanceService = attendanceService;
+		this.classService = classService;
 	}
 
 	createAttendance = async (req, res) => {
@@ -26,13 +27,24 @@ class AttendanceController {
 	getAttendance = async (req, res) => {
 		if (req.userData.role === 1) {
 			try {
-				const dbResult = await this.attendanceService.getAttendancesByUser(req.userData.id);
+				const managedClass = await this.classService.getClassesByManagerId(req.userData.id);
+				if (!managedClass) {
+					const dbResult = await this.attendanceService.getAttendancesByUser(req.userData.id);
+					return res.status(200).send(dbResult);
+				}
+				if(req.query.classId){
+				const dbResult = await this.attendanceService.getAttendancesByClass(req.query.classId);
 				return res.status(200).send(dbResult);
+				}else{
+					const dbResult = await this.attendanceService.getAttendancesByUser(req.userData.id);
+					return res.status(200).send(dbResult);
+				}
+
 			} catch (err) {
 				return res.status(500).send(err);
 			}
 		}
-		
+
 		if (req.query.userId && req.query.classId) {
 			try {
 				const dbResult = await this.attendanceService.getAttendanceByUserAndClass(req.query.userId, req.query.classId);
@@ -75,7 +87,14 @@ class AttendanceController {
 			req.userData.id
 		);
 
+
 		try {
+			if (req.userData.role === 1) {
+				const managedClass = await this.classService.getClassesByManagerId(req.userData.id);
+				if (!managedClass.find((c) => c.id === attendance.class_id)) {
+					return res.status(200).send({ msg: "You are not allowed to update this attendance." });
+				}
+			}
 			const dbResult = await this.attendanceService.updateAttendance(attendance);
 			return res.status(200).send(dbResult);
 		} catch (err) {

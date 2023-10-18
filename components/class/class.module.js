@@ -2,13 +2,15 @@ import ClassController from './class.controller.js';
 import ClassService from './class.service.js';
 import ClassRouter from './class.router.js';
 import AuthService from '../auth/auth.service.js';
+import AttendanceService from '../attendance/attendance.service.js';
 
 
 class ClassModule {
     constructor(env) {
         this.authService = new AuthService(env);
         this.classService = new ClassService(env);
-        this.classController = new ClassController(this.classService);
+        this.AttendanceService = new AttendanceService(env);
+        this.classController = new ClassController(this.classService, this.AttendanceService);
         this.classRouter = new ClassRouter(this.classController, this.authService);
     }
 
