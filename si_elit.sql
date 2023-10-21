@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 17 Okt 2023 pada 10.15
+-- Waktu pembuatan: 22 Okt 2023 pada 00.01
 -- Versi server: 10.4.28-MariaDB
 -- Versi PHP: 8.2.4
 
@@ -40,12 +40,72 @@ CREATE TABLE `attendances` (
 --
 
 INSERT INTO `attendances` (`user_id`, `class_id`, `attend_at`, `status`, `lastEditBy`) VALUES
-(1, 8, '2023-10-17 13:00:32', 'terlambat', 1),
-(3, 1, '2023-10-15 13:01:50', 'hadir', 6),
-(3, 4, NULL, NULL, 6),
-(7, 1, '2023-10-17 13:08:37', 'izin', 6),
-(7, 8, '2023-10-17 12:57:30', 'terlambat', 7),
-(7, 9, '2023-10-17 13:09:28', 'hadir', 6);
+(1, 48, '2023-10-22 01:19:20', 'izin', 6),
+(1, 49, '2023-10-22 03:54:06', 'hadir', 6),
+(1, 50, '2023-10-22 03:54:02', 'hadir', 6),
+(1, 51, '2023-10-22 01:22:07', 'izin', 6),
+(1, 52, '2023-10-22 00:47:56', 'hadir', 6),
+(1, 53, '2023-10-22 00:47:54', 'izin', 6),
+(1, 54, '2023-10-22 00:47:55', 'izin', 6),
+(1, 55, NULL, NULL, NULL),
+(1, 56, NULL, NULL, NULL),
+(1, 57, NULL, NULL, NULL),
+(1, 58, NULL, NULL, NULL),
+(3, 48, NULL, NULL, NULL),
+(3, 49, NULL, NULL, NULL),
+(3, 50, NULL, NULL, NULL),
+(3, 51, NULL, NULL, NULL),
+(3, 52, NULL, NULL, NULL),
+(3, 53, NULL, NULL, NULL),
+(3, 54, NULL, NULL, NULL),
+(3, 55, NULL, NULL, NULL),
+(3, 56, NULL, NULL, NULL),
+(3, 57, NULL, NULL, NULL),
+(3, 58, NULL, NULL, NULL),
+(7, 48, NULL, NULL, NULL),
+(7, 49, NULL, NULL, NULL),
+(7, 50, NULL, NULL, NULL),
+(7, 51, NULL, NULL, NULL),
+(7, 52, NULL, NULL, NULL),
+(7, 53, NULL, NULL, NULL),
+(7, 54, NULL, NULL, NULL),
+(7, 55, NULL, NULL, NULL),
+(7, 56, NULL, NULL, NULL),
+(7, 57, NULL, NULL, NULL),
+(7, 58, NULL, NULL, NULL),
+(8, 48, NULL, NULL, NULL),
+(8, 49, NULL, NULL, NULL),
+(8, 50, NULL, NULL, NULL),
+(8, 51, NULL, NULL, NULL),
+(8, 52, NULL, NULL, NULL),
+(8, 53, NULL, NULL, NULL),
+(8, 54, NULL, NULL, NULL),
+(8, 55, NULL, NULL, NULL),
+(8, 56, NULL, NULL, NULL),
+(8, 57, NULL, NULL, NULL),
+(8, 58, NULL, NULL, NULL),
+(17, 48, NULL, NULL, NULL),
+(17, 49, NULL, NULL, NULL),
+(17, 50, NULL, NULL, NULL),
+(17, 51, NULL, NULL, NULL),
+(17, 52, NULL, NULL, NULL),
+(17, 53, NULL, NULL, NULL),
+(17, 54, NULL, NULL, NULL),
+(17, 55, NULL, NULL, NULL),
+(17, 56, NULL, NULL, NULL),
+(17, 57, NULL, NULL, NULL),
+(17, 58, NULL, NULL, NULL),
+(21, 48, NULL, NULL, NULL),
+(21, 49, NULL, NULL, NULL),
+(21, 50, NULL, NULL, NULL),
+(21, 51, NULL, NULL, NULL),
+(21, 52, NULL, NULL, NULL),
+(21, 53, NULL, NULL, NULL),
+(21, 54, NULL, NULL, NULL),
+(21, 55, NULL, NULL, NULL),
+(21, 56, NULL, NULL, NULL),
+(21, 57, NULL, NULL, NULL),
+(21, 58, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -69,14 +129,17 @@ CREATE TABLE `classes` (
 --
 
 INSERT INTO `classes` (`id`, `name`, `start_date`, `end_date`, `manager_id`, `teacher_id`, `type`, `location`) VALUES
-(1, 'Keamanan Jaringan Komputer', '2023-09-20 12:00:00', '2023-09-20 12:40:00', 1, 3, 1, 'PB (Masjid lt 1), LB (GSG), CP (Aula)'),
-(4, 'Keamanan Jaringan Komputer', '2023-09-25 16:00:00', '2023-09-25 17:40:00', 1, 3, 1, 'PB (Masjid lt 1), LB (GSG), CP (Aula)'),
-(5, 'Tiny Moving Parts', '2023-10-01 16:00:00', '2023-10-01 17:40:00', 1, 3, 1, 'tip tap toe'),
-(8, 'Sistem Informasi', '2023-10-17 12:40:00', '2023-10-17 20:20:00', 1, 3, 2, 'gedung baru tekkom A.102'),
-(9, 'Sistem Informasi', '2024-10-02 10:40:00', '2024-10-02 12:20:00', 1, 3, 2, 'gedung baru tekkom A.102'),
-(10, 'Kriptografi', '2024-10-02 13:00:00', '2024-10-02 15:30:00', 1, 3, 3, 'Tekkom B.201'),
-(11, 'Pemrograman Jaringan', '2024-10-03 08:40:00', '2024-10-03 10:20:00', 1, 3, 3, 'Tekkom B.201'),
-(12, 'Etika Profesi', '2024-10-03 11:40:00', '2024-10-03 13:20:00', 1, 3, 1, 'Tekkom B.201');
+(48, 'Pengajian Pagi', '2023-10-09 05:00:00', '2023-10-09 06:30:00', 1, 5, NULL, 'PB (Masjid lt 1), LB (GSG), CP (Aula)'),
+(49, 'Pengajian Malam', '2023-10-09 19:30:00', '2023-10-09 20:30:00', 3, 5, NULL, 'PB (Masjid lt 1), LB (GSG), CP (Aula)'),
+(50, 'Pengajian Pagi', '2023-10-10 05:00:00', '2023-10-10 06:00:00', 8, 5, NULL, 'PB (Masjid lt 1), LB (GSG), CP (Aula)'),
+(51, 'Pengajian Malam', '2023-10-10 19:30:00', '2023-10-10 20:30:00', 7, 5, NULL, 'PB (Masjid lt 1), LB (GSG), CP (Aula)'),
+(52, 'Pengajian Pagi', '2023-10-18 05:00:00', '2023-10-18 06:00:00', 1, 5, NULL, 'PB (Masjid lt 1), LB (GSG), CP (Aula)'),
+(53, 'Pengajian Malam', '2023-10-18 19:30:00', '2023-10-18 21:00:00', 3, 5, NULL, 'PB (Masjid lt 1), LB (GSG), CP (Aula)'),
+(54, 'Pengajian Pagi', '2023-10-20 05:00:00', '2023-10-20 06:00:00', 8, 5, NULL, 'PB (Masjid lt 1), LB (GSG), CP (Aula)'),
+(55, 'Pengajian Malam', '2023-10-20 19:30:00', '2023-10-20 21:00:00', 7, 5, NULL, 'PB (Masjid lt 1), LB (GSG), CP (Aula)'),
+(56, 'Pengajian Malam', '2023-10-13 20:00:00', '2023-10-13 21:00:00', 3, 5, NULL, 'PB (Masjid lt 1), LB (GSG), CP (Aula)'),
+(57, 'Pengajian Pagi', '2023-10-02 03:57:00', '2023-10-02 04:57:00', 1, 5, NULL, 'PB (Masjid lt 1), LB (GSG), CP (Aula)'),
+(58, 'Pengajian Malam', '2023-09-26 19:58:00', '2023-09-26 21:58:00', 3, 5, NULL, 'PB (Masjid lt 1), LB (GSG), CP (Aula)');
 
 -- --------------------------------------------------------
 
@@ -96,9 +159,7 @@ CREATE TABLE `class_types` (
 INSERT INTO `class_types` (`id`, `name`) VALUES
 (1, 'Cepatan'),
 (2, 'Lambatan'),
-(3, 'Pegon Bacaan'),
-(4, 'Saringan'),
-(5, 'MT');
+(3, 'Pegon Bacaan');
 
 -- --------------------------------------------------------
 
@@ -113,13 +174,6 @@ CREATE TABLE `leave_permits` (
   `img_url` varchar(255) NOT NULL,
   `is_approved` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data untuk tabel `leave_permits`
---
-
-INSERT INTO `leave_permits` (`user_id`, `class_id`, `description`, `img_url`, `is_approved`) VALUES
-(7, 1, 'Sakit', '/public/uploads/img_file-1697522902381-282105496.jpg', 1);
 
 -- --------------------------------------------------------
 
@@ -172,11 +226,11 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `name`, `card_id`, `password`, `birth_date`, `grade`, `telephone_number`, `role`, `class_type`, `gender`, `nis`, `is_active`, `inactive_reason`, `origin`, `residence_in_semarang`) VALUES
 (1, 'Cahyo Ade Prasetyo', '3121D026', '$2b$10$HSY71Z49A8CxZYf4/Dkwwun8h6gqRA/XnhHKFM.ZFLfWCyrUHqKrS', '2001-08-21', '5', '085601560192', 1, 1, 1, '211201', 1, NULL, 'semarang', 'pribumi'),
 (3, 'Sachiko Fitria Ramadanti', 'ABCD1235', '$2b$10$ToMnqO2WZ4cDf.FUdGMSnuqxcM1.qrHzO3nffsuhngkkq6mEiGNZ6', '2001-08-20', '6', '085601560192', 1, 2, 0, '211202', 1, 'null', 'kendal', 'ppm'),
-(5, 'testGuru', NULL, '$2b$10$A5ha36N9Xf5q2ee2l3EqZOVArcF.wTD84GnFYyqIEe.1xaUdhCxF.', '2001-08-16', NULL, '0856015601923', 2, NULL, 0, NULL, 1, NULL, NULL, 'asd'),
+(5, 'testGuru', NULL, '$2b$10$E9kr1lKI6tZUGflT5WaNoe.iuaWNU0K02d1SZpceW9o3LM7sJc6NG', '2001-08-15', NULL, '0856015601923', 2, NULL, 0, NULL, 1, NULL, NULL, 'asd'),
 (6, 'testAdmin', NULL, '$2b$10$qIvd7hB0LbQtd8QiluI8R.n/r2foDlpcsZG60kguZ62A66aataRI6', '2001-08-21', NULL, '085601560192', 3, NULL, 0, NULL, 1, NULL, NULL, NULL),
-(7, 'testSantri', 'ABCD1238', '$2b$10$lD.dHEBK9f4phvUGx5j53ud9DbFyPldFY0947AB9JtNEoWh9nqNYS', '2001-08-05', '8', '085601560129', 1, 4, 0, '211204', 1, 'null', 'solo', 'ppmmm'),
+(7, 'testSantri', 'ABCD1238', '$2b$10$lD.dHEBK9f4phvUGx5j53ud9DbFyPldFY0947AB9JtNEoWh9nqNYS', '2001-08-05', '8', '085601560129', 1, 2, 0, '211204', 1, 'null', 'solo', 'ppmmm'),
 (8, 'Muhammad Sulthon Auliya', 'ABCD1234', '$2b$10$bWvRNiFrcd/Jq8tSn/6yzuego2nxp9crkEgAIxEjLUAjkFEyp8ANC', '2001-08-19', '7', '085601560192', 1, 3, 1, '211203', 1, 'null', 'kudus', 'ppm'),
-(17, 'test MT', '34FF4C79', '$2b$10$qIvd7hB0LbQtd8QiluI8R.n/r2foDlpcsZG60kguZ62A66aataRI6', '2023-06-15', '4', '085601560192', 1, 5, 0, '211207', 1, 'Magang', 'Batang', 'ppmmm'),
+(17, 'test MT', '34FF4C79', '$2b$10$qIvd7hB0LbQtd8QiluI8R.n/r2foDlpcsZG60kguZ62A66aataRI6', '2023-06-15', '4', '085601560192', 1, 1, 0, '211207', 1, 'Magang', 'Batang', 'ppmmm'),
 (20, 'admin2', NULL, '$2b$10$qa2lQKYJN2f9.U0Zx3.47u0f6oX.S/7tWFaU/lumOxZ/nNyutsOqi', '2023-10-14', NULL, '0856015601923', 3, NULL, 1, NULL, NULL, NULL, NULL, NULL),
 (21, 'Makari', 'FABC1234', '$2b$10$BSNVSRQIZQ4IRQhCP2wsdu3plgUA6y7jFDbCU7PwxvEZ7k2.ckj.O', '2023-10-14', '5', '085601560192', 1, 3, 1, '211209', NULL, 'Magang', 'Batangg', 'p');
 
@@ -199,7 +253,11 @@ ALTER TABLE `classes`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_manager` (`manager_id`),
   ADD KEY `fk_teacher` (`teacher_id`),
-  ADD KEY `classes_FK` (`type`);
+  ADD KEY `classes_FK` (`type`),
+  ADD KEY `year` (`start_date`),
+  ADD KEY `week` (`start_date`),
+  ADD KEY `hour` (`start_date`),
+  ADD KEY `idx_start_date` (`start_date`);
 
 --
 -- Indeks untuk tabel `class_types`
@@ -240,7 +298,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT untuk tabel `classes`
 --
 ALTER TABLE `classes`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
 
 --
 -- AUTO_INCREMENT untuk tabel `class_types`
