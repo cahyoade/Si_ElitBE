@@ -24,6 +24,19 @@ class AttendanceController {
 		}
 	};
 
+	getAttendanceRecap = async (req, res) => {
+		if (!req.query.startDate || !req.query.endDate || !req.query.classType) {
+			return res.status(400).send({ msg: "query params startDate, endDate, and classType is needed." });
+		}
+
+		try {
+			const dbResult = await this.attendanceService.getAttendanceRecap(req.query.startDate, req.query.endDate, req.query.classType);
+			return res.status(200).send(dbResult);
+		} catch (err) {
+			return res.status(500).send(err);
+		}
+	};
+
 	getAttendance = async (req, res) => {
 		if (req.userData.role === 1) {
 			try {

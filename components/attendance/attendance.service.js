@@ -35,7 +35,7 @@ class AttendanceService {
     });
 
     createAttendance = (classId) => new Promise(async (resolve, reject) => {
-        
+
         this.pool.getConnection((err, connection) => {
             if (err) {
                 reject({ msg: "Could not connect to the database." });
@@ -49,15 +49,15 @@ class AttendanceService {
                     reject({ msg: "An error occured while trying to query the database." });
                     return;
                 }
-                
+
                 query = `replace into attendances( user_id, class_id) values `;
-                
+
                 rows.map(row => {
-                    if(row.role === 1){
+                    if (row.role === 1) {
                         query += `(${row.id}, ${classId}),`;
                     }
                 });
-                
+
 
                 connection.query(query.slice(0, -1), (err, rows) => {
                     connection.release();
@@ -89,8 +89,8 @@ class AttendanceService {
                 query = `select a.user_id, a.class_id, u2.nis, u2.name, u2.grade, u2.gender, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status, IFNULL(ELT(FIELD(u.role, 1, 2, 3), 'santri', 'guru', 'admin'), 'sistem') as lastEditBy from attendances a left join classes c on a.class_id = c.id  left join users u on a.lastEditBy = u.id join users u2 on a.user_id = u2.id left join class_types ct on u2.class_type = ct.id ${sortByAttend_at ? `order by a.attend_at desc` : ''}`;
             } else if (start_date && end_date) {
                 query = `select a.user_id, a.class_id, u2.nis, u2.name, u2.grade, u2.gender, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status, IFNULL(ELT(FIELD(u.role, 1, 2, 3), 'santri', 'guru', 'admin'), 'sistem') as lastEditBy from attendances a left join classes c on a.class_id = c.id  left join users u on a.lastEditBy = u.id join users u2 on a.user_id = u2.id left join class_types ct on u2.class_type = ct.id where c.start_date between '${start_date}' and '${end_date}' ${sortByAttend_at ? `order by a.attend_at desc` : ''}`;
-            } 
-            else if (start_date){
+            }
+            else if (start_date) {
                 query = `select a.user_id, a.class_id, u2.nis, u2.name, u2.grade, u2.gender, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status, IFNULL(ELT(FIELD(u.role, 1, 2, 3), 'santri', 'guru', 'admin'), 'sistem') as lastEditBy from attendances a left join classes c on a.class_id = c.id  left join users u on a.lastEditBy = u.id join users u2 on a.user_id = u2.id left join class_types ct on u2.class_type = ct.id where c.start_date > '${start_date}' ${sortByAttend_at ? `order by a.attend_at desc` : ''}`;
             }
             else {
@@ -100,7 +100,75 @@ class AttendanceService {
             connection.query(query, (err, rows) => {
                 connection.release();
                 if (err) {
-                    reject({ msg: "An error occured while trying to query the database."});
+                    reject({ msg: "An error occured while trying to query the database." });
+                    return;
+                }
+                resolve(rows);
+            });
+        });
+    }
+    );
+
+    getAttendanceRecap = (start_date, end_date, class_type) => new Promise((resolve, reject) => {
+        this.pool.getConnection((err, connection) => {
+            if (err) {
+                reject({ msg: "Could not connect to the database." });
+                return;
+            }
+
+            const query = `select u.name, u.gender, 
+            makedate(year(c.start_date), week(c.start_date) * 7 - 5) as week_start, 
+            makedate(year(c.start_date), week(c.start_date) * 7) as week_end,
+            ct.name as class_name,
+            count(case a.status 
+                when 'hadir' 
+                then case when hour(c.start_date) < 14 then 1 else null end
+                when 'terlambat' 
+                then case when hour(c.start_date) < 14 then 1 else null end
+                else null 
+                end) as jumlah_hadir_pagi,
+            count(case a.status 
+                when 'izin' 
+                then case when hour(c.start_date) < 14 then 1 else null end
+                else null 
+                end) as jumlah_izin_pagi,
+            count(case when a.status is null 
+                then case when hour(c.start_date) < 14 then 1 else null end 
+                else null 
+                end) as jumlah_alfa_pagi,
+            count(case a.status 
+                when 'hadir' 
+                then case when hour(c.start_date) > 14 then 1 else null end
+                when 'terlambat' 
+                then case when hour(c.start_date) > 14 then 1 else null end
+                else null 
+                end) as jumlah_hadir_malam,
+            count(case a.status 
+                when 'izin' 
+                then case when hour(c.start_date) > 14 then 1 else null end
+                else null 
+                end) as jumlah_izin_malam,
+            count(case when a.status is null 
+                then case when hour(c.start_date) > 14 then 1 else null end 
+                else null 
+                end) as jumlah_alfa_malam,
+            count(case when hour(c.start_date) > 14 then 1 else null end) as jumlah_sesi_malam,
+            count(case when hour(c.start_date) < 14 then 1 else null end) as jumlah_sesi_pagi,
+            count(c.start_date) as jumlah_ngaji
+            from attendances a left join classes c 
+            on a.class_id = c.id 
+            left join users u
+            on a.user_id = u.id
+            left join class_types ct 
+            on u.class_type = ct.id
+            where u.class_type = ${class_type} 
+            and c.start_date between '${start_date}' and '${end_date}'
+            group by name, week(c.start_date)`
+
+            connection.query(query, (err, rows) => {
+                connection.release();
+                if (err) {
+                    reject({ msg: "An error occured while trying to query the database." });
                     return;
                 }
                 resolve(rows);

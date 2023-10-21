@@ -9,6 +9,7 @@ class AttendanceRouter {
 	getRouter() {
 		const router = express.Router();
 		router.route('/').get(this.authService.authorizeStudent, this.attendanceController.getAttendance);
+		router.route('/recap').get(this.authService.authorizeAdmin, this.attendanceController.getAttendanceRecap);
 		router.route('/').post(this.authService.authorizeAdmin, this.attendanceController.createAttendance);
 		router.route('/').put(this.authService.authorizeStudent, this.attendanceController.updateAttendance);
 		router.route('/').delete(this.authService.authorizeAdmin, this.attendanceController.deleteAttendance);
