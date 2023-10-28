@@ -10,7 +10,7 @@ class ClassModule {
         this.authService = new AuthService(env);
         this.classService = new ClassService(env);
         this.AttendanceService = new AttendanceService(env);
-        this.classController = new ClassController(this.classService, this.AttendanceService);
+        this.classController = new ClassController(env, this.classService, this.AttendanceService);
         this.classRouter = new ClassRouter(this.classController, this.authService);
     }
 

@@ -39,7 +39,7 @@ class ClassService {
                 connection.query(query, (err, rows) => {
                     connection.release();
                     if (err) {
-                        reject({ msg: "An error occured while trying to query the database." });
+                        reject({ msg: "An error occured while trying to query the database.", err: err });
                         return;
                     }
                     resolve({ msg: "Class created.", insertId: rows.insertId })
@@ -49,6 +49,49 @@ class ClassService {
 
         });
 
+    });
+
+    addMultipleClass = (entity) => new Promise((resolve, reject) => {
+        const start_date = moment(entity.start_date).format('YYYY-MM-DD');
+        const end_date = moment(entity.end_date).format('YYYY-MM-DD');
+
+        while(start_date.isBefore(end_date, 'day')){
+            const start_datetime = moment(start_date).set({"hour": +this.env.startPagi.split(':')[0], "minute": +this.env.startPagi.split(':')[1]})
+            const end_datetime = moment(start_date).set({"hour": +this.env.endPagi.split(':')[0], "minute": +this.env.endPagi.split(':')[1]})
+
+            this.pool.getConnection((err, connection) => {
+                if (err) {
+                    reject({ msg: "Could not connect to the database." });
+                    return;
+                }
+                
+    
+                let query = `select * from classes where (start_date <= '${end_date}') and (end_date >= '${start_date}')`;
+    
+                connection.query(query, (err, rows) => {
+                    if (err) {
+                        reject({ msg: "An error occured while trying to query the database." });
+                        return;
+                    }
+                    if (rows.length > 0) {
+                        resolve({ msg: `Another class already exists in this time period (${rows[0].start_date} - ${rows[0].end_date}).` });
+                        return;
+                    }
+    
+                    query = `insert into classes( name, start_date, end_date, manager_id, teacher_id, location) values ('${entity.name}','${start_date}', '${end_date}', '${entity.manager_id}', '${entity.teacher_id}', '${entity.location}')`;
+    
+                    connection.query(query, (err, rows) => {
+                        connection.release();
+                        if (err) {
+                            reject({ msg: "An error occured while trying to query the database." });
+                            return;
+                        }
+                        resolve({ msg: "Multiple class created.", insertId: rows.insertId })
+                    });
+                });
+    
+            });
+        }
     });
 
 

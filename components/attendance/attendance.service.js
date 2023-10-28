@@ -62,7 +62,7 @@ class AttendanceService {
                 connection.query(query.slice(0, -1), (err, rows) => {
                     connection.release();
                     if (err) {
-                        reject({ msg: "An error occured while trying to query the database." });
+                        reject({ msg: "An error occured while trying to query the database."});
                         return;
                     }
                     resolve({ msg: "Attendance created." });
@@ -188,7 +188,7 @@ class AttendanceService {
                 return;
             }
 
-            const query = `select a.user_id, a.class_id, c.start_date, a.status, u.name, u.grade from attendances a left join classes c
+            const query = `select a.user_id, a.class_id, c.start_date, a.status, u.name, u.grade, u.nis from attendances a left join classes c
             on a.class_id = c.id
             left join users u
             on a.user_id = u.id
@@ -221,7 +221,7 @@ class AttendanceService {
 
                 try {
                     const result = await this.updateAttendance(newAttendance);
-                    resolve(`${cardId},${rows[0].name.split(' ')[0]} ${rows[0].grade},${moment().format('h:mm')}`);
+                    resolve(`${rows[0].nis},${rows[0].name.split(' ')[0]} ${rows[0].grade},${moment().format('H:mm')}`);
                 } catch (err) {
                     reject(JSON.stringify(err));
                 }
