@@ -202,12 +202,12 @@ class AttendanceService {
                     return;
                 }
                 if (!rows[0]) {
-                    reject(`kelas tidak ditemukan.`);
+                    reject(`kelas tdk ditemukan`);
                     return;
                 }
 
                 if (rows[0].status != null) {
-                    reject(`anda sudah presensi.`);
+                    reject(`anda sudah presensi`);
                     return;
                 }
 
@@ -239,7 +239,7 @@ class AttendanceService {
                 return;
             }
 
-            const query = `select a.user_id, a.class_id, u2.nis, u2.name, u2.grade, u2.gender, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status, IFNULL(ELT(FIELD(u.role, 1, 2, 3), 'santri', 'guru', 'admin'), 'sistem') as lastEditBy from attendances a left join classes c on a.class_id = c.id left join users u on a.lastEditBy = u.id join users u2 on a.user_id = u2.id left join class_types ct on u2.class_type = ct.id where a.user_id = ${userId}`;
+            const query = `select a.user_id, a.class_id, u2.nis, u2.name, u2.grade, u2.gender, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status, IFNULL(ELT(FIELD(u.role, 1, 2, 3), 'santri', 'guru', 'admin'), 'sistem') as lastEditBy from attendances a left join classes c on a.class_id = c.id left join users u on a.lastEditBy = u.id join users u2 on a.user_id = u2.id left join class_types ct on u2.class_type = ct.id where a.user_id = ${userId} order by a.attend_at desc limit 10`;
 
             connection.query(query, (err, rows) => {
                 connection.release();
