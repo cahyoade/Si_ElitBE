@@ -5,9 +5,10 @@ import fs from "fs";
 
 
 class PermitController {
-	constructor(permitService, attendanceService, env) {
+	constructor(permitService, attendanceService, classService, env) {
 		this.permitService = permitService;
 		this.attendanceService = attendanceService;
+		this.classService = classService;
 		this.env = env;
 	}
 
@@ -30,8 +31,15 @@ class PermitController {
 
 	getPermits = async (req, res) => {
 		if(req.userData.role === 1){
+			const managedClass = await this.classService.getClassesByManagerId(req.userData.id);
+
 			try{
-				const dbResult = await this.permitService.getPermitsByUser(req.userData.id);
+				let dbResult;
+				if(!managedClass){
+					dbResult = await this.permitService.getPermitsByUser(req.userData.id);
+				}else{
+					dbResult = await this.permitService.getPermits(req.query.returnAll, req.query.startDate, req.query.endDate, req.userData.role, req.userData.id);
+				}
 				return res.status(200).send(dbResult);
 			}catch(err){
 				return res.status(500).send(err);
@@ -70,7 +78,10 @@ class PermitController {
 	};
 
 	updatePermit = async (req, res) => {
-		if (req.userData.role === 1) {
+		const managedClass = await this.classService.getClassesByManagerId(req.userData.id);
+
+		if (req.userData.role === 1 && !managedClass) {
+
 			const permit = new Permit(
 				req.userData.id,
 				req.body.class_id,

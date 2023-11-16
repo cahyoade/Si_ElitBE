@@ -20,10 +20,10 @@ class ClassController {
 
 					
 					//create class pagi
-					const startpagi_datetime = moment(start_date).set({ "hour": +this.env.startPagi.split(':')[0], "minute": +this.env.startPagi.split(':')[1] }).format('YYYY-MM-DDTHH:mm');
-					const endpagi_datetime = moment(start_date).set({ "hour": +this.env.endPagi.split(':')[0], "minute": +this.env.endPagi.split(':')[1] }).format('YYYY-MM-DDTHH:mm');
+					const startpagi_datetime = moment(start_date).set({ "hour": +req.body.start_day.split(':')[0], "minute": +req.body.start_day.split(':')[1] }).format('YYYY-MM-DDTHH:mm');
+					const endpagi_datetime = moment(start_date).set({ "hour": +req.body.end_day.split(':')[0], "minute": +req.body.end_day.split(':')[1] }).format('YYYY-MM-DDTHH:mm');
 					
-					if((new Date(startpagi_datetime)).getDay()%6==0 && !(+this.env.createWeekendClass)){
+					if((new Date(startpagi_datetime)).getDay()%6==0 && !(+req.body.createWeekendClass)){
 						start_date.add(1, 'days');
 						continue;
 					}
@@ -39,11 +39,12 @@ class ClassController {
 						);
 
 					let dbResult = await this.classService.addClass(entityPagi);
+					console.log(dbResult);
 					await this.attendanceService.createAttendance(dbResult.insertId);
 					
 					//create class malam
-					const startmalam_datetime = moment(start_date).set({ "hour": +this.env.startMalam.split(':')[0], "minute": +this.env.startMalam.split(':')[1] }).format('YYYY-MM-DDTHH:mm');
-					const endmalam_datetime = moment(start_date).set({ "hour": +this.env.endMalam.split(':')[0], "minute": +this.env.endMalam.split(':')[1] }).format('YYYY-MM-DDTHH:mm');
+					const startmalam_datetime = moment(start_date).set({ "hour": +req.body.start_night.split(':')[0], "minute": +req.body.start_night.split(':')[1] }).format('YYYY-MM-DDTHH:mm');
+					const endmalam_datetime = moment(start_date).set({ "hour": +req.body.end_night.split(':')[0], "minute": +req.body.end_night.split(':')[1] }).format('YYYY-MM-DDTHH:mm');
 					
 					const entityMalam = new Class(
 						req.body.id,
@@ -113,7 +114,7 @@ class ClassController {
 				}
 			}
 			try {
-				const dbResult = await this.classService.getClasses();
+				const dbResult = await this.classService.getClasses(req.query.start_date, req.query.end_date);
 				return res.status(200).send(dbResult);
 			} catch (err) {
 				return res.status(500).send(err);
@@ -131,7 +132,7 @@ class ClassController {
 
 		getUpcomingClass = async (req, res) => {
 			try {
-				const dbResult = await this.classService.getUpcomingClasses();
+				const dbResult = await this.classService.getUpcomingClasses(req.query.start_date, req.query.end_date);
 				return res.status(200).send(dbResult);
 			} catch (err) {
 				return res.status(500).send(err);

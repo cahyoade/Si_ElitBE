@@ -62,7 +62,7 @@ class AttendanceService {
                 connection.query(query.slice(0, -1), (err, rows) => {
                     connection.release();
                     if (err) {
-                        reject({ msg: "An error occured while trying to query the database."});
+                        reject({ msg: "An error occured while trying to query the database.", err: err});
                         return;
                     }
                     resolve({ msg: "Attendance created." });
@@ -232,14 +232,14 @@ class AttendanceService {
 
     })
 
-    getAttendancesByUser = (userId) => new Promise((resolve, reject) => {
+    getAttendancesByUser = (userId, limit) => new Promise((resolve, reject) => {
         this.pool.getConnection((err, connection) => {
             if (err) {
                 reject({ msg: "Could not connect to the database." });
                 return;
             }
 
-            const query = `select a.user_id, a.class_id, u2.nis, u2.name, u2.grade, u2.gender, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status, IFNULL(ELT(FIELD(u.role, 1, 2, 3), 'santri', 'guru', 'admin'), 'sistem') as lastEditBy from attendances a left join classes c on a.class_id = c.id left join users u on a.lastEditBy = u.id join users u2 on a.user_id = u2.id left join class_types ct on u2.class_type = ct.id where a.user_id = ${userId} order by a.attend_at desc limit 10`;
+            const query = `select a.user_id, a.class_id, u2.nis, u2.name, u2.grade, u2.gender, c.name as class_name, ct.name as class_type, c.start_date, c.end_date, a.attend_at, a.status, IFNULL(ELT(FIELD(u.role, 1, 2, 3), 'santri', 'guru', 'admin'), 'sistem') as lastEditBy from attendances a left join classes c on a.class_id = c.id left join users u on a.lastEditBy = u.id join users u2 on a.user_id = u2.id left join class_types ct on u2.class_type = ct.id where a.user_id = ${userId} order by a.attend_at desc ${limit ?  `limit ${limit}` : ''}`;
 
             connection.query(query, (err, rows) => {
                 connection.release();

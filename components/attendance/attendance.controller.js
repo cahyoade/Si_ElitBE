@@ -40,16 +40,19 @@ class AttendanceController {
 	getAttendance = async (req, res) => {
 		if (req.userData.role === 1) {
 			try {
+
 				const managedClass = await this.classService.getClassesByManagerId(req.userData.id);
 				if (!managedClass) {
-					const dbResult = await this.attendanceService.getAttendancesByUser(req.userData.id);
+					const dbResult = await this.attendanceService.getAttendancesByUser(req.userData.id, req.query.limit);
+
 					return res.status(200).send(dbResult);
 				}
 				if(req.query.classId){
 				const dbResult = await this.attendanceService.getAttendancesByClass(req.query.classId);
 				return res.status(200).send(dbResult);
 				}else{
-					const dbResult = await this.attendanceService.getAttendancesByUser(req.userData.id);
+					const dbResult = await this.attendanceService.getAttendancesByUser(req.userData.id, req.query.limit);
+					console.log(dbResult.length);
 					return res.status(200).send(dbResult);
 				}
 

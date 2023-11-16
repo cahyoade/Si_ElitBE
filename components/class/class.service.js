@@ -83,7 +83,7 @@ class ClassService {
                     connection.query(query, (err, rows) => {
                         connection.release();
                         if (err) {
-                            reject({ msg: "An error occured while trying to query the database." });
+                            reject({ msg: "An error occured while trying to query the database.", err: err });
                             return;
                         }
                         resolve({ msg: "Multiple class created.", insertId: rows.insertId })
@@ -95,14 +95,18 @@ class ClassService {
     });
 
 
-    getClasses = () => new Promise((resolve, reject) => {
+    getClasses = (start_date, end_date) => new Promise((resolve, reject) => {
         this.pool.getConnection((err, connection) => {
-            if (err) {
+            if (err) { 
                 reject({ msg: "Could not connect to the database." });
                 return;
             }
 
-            const query = `select * from classes order by start_date desc`;
+            let query = `select * from classes order by start_date desc`
+
+            if (start_date && end_date) {
+                query = `select * from classes where (start_date > '${start_date}') and (end_date < '${end_date}') order by start_date desc`;
+            }
 
             connection.query(query, (err, rows) => {
                 connection.release();
@@ -177,14 +181,18 @@ class ClassService {
     }
     );
 
-    getUpcomingClasses = () => new Promise((resolve, reject) => {
+    getUpcomingClasses = (start_date, end_date) => new Promise((resolve, reject) => {
         this.pool.getConnection((err, connection) => {
             if (err) {
                 reject({ msg: "Could not connect to the database." });
                 return;
             }
 
-            const query = `select * from classes where start_date > now() limit 50`;
+            let query = `select * from classes where start_date > now() limit 20`;
+
+            if (start_date && end_date) {
+                query = `select * from classes where (start_date >= '${start_date}') and (start_date <= '${end_date}') order by start_date desc`;
+            }
 
             connection.query(query, (err, rows) => {
                 connection.release();
