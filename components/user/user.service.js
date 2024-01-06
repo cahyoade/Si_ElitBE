@@ -178,7 +178,7 @@ class UserService {
             connection.query(query, (err, rows) => {
                 connection.release();
                 if (err) {
-                    reject({ msg: "An error occured while trying to query the database." });
+                    reject({ msg: "An error occured while trying to query the database.", err: err});
                     return;
                 }
                 resolve({ msg: "user deleted" });

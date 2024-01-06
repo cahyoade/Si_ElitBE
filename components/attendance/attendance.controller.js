@@ -44,7 +44,6 @@ class AttendanceController {
 				const managedClass = await this.classService.getClassesByManagerId(req.userData.id);
 				if (!managedClass) {
 					const dbResult = await this.attendanceService.getAttendancesByUser(req.userData.id, req.query.limit);
-
 					return res.status(200).send(dbResult);
 				}
 				if(req.query.classId){

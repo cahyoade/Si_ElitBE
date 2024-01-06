@@ -31,11 +31,11 @@ class PermitController {
 
 	getPermits = async (req, res) => {
 		if(req.userData.role === 1){
+			
 			const managedClass = await this.classService.getClassesByManagerId(req.userData.id);
-
 			try{
 				let dbResult;
-				if(!managedClass){
+				if(!managedClass.length >= 1){
 					dbResult = await this.permitService.getPermitsByUser(req.userData.id);
 				}else{
 					dbResult = await this.permitService.getPermits(req.query.returnAll, req.query.startDate, req.query.endDate, req.userData.role, req.userData.id);
