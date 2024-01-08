@@ -15,6 +15,9 @@ class MqttModule {
 
     startService = () => {
         const broker = spawn('mosquitto', ['-v', '-c', 'mosquitto.conf'], {shell: true, cwd: process.cwd() + "\\components\\mosquitto"});
+        broker.stderr.on('data', data => {
+            console.log(data.toString());
+        });
         this.mqttService.start();
     }
     getRouter = () => this.mqttRouter.getRouter();

@@ -25,7 +25,7 @@ class UserService {
                 reject({ msg: "Could not connect to the database." });
                 return;
             }
-            const query = `insert into users( name, card_id, password, birth_date, grade, telephone_number, role, nis, is_active, inactive_reason, gender, class_type, origin, residence_in_semarang) values ('${user.name}',${user.card_id ? `'${user.card_id}'` : null}, '${hashedPassword}', '${user.birth_date}', ${user.grade ? `'${user.grade}'` : null}, '${user.telephone_number}', '${user.role}', ${user.nis ? `'${user.nis}'` : null}, ${user.is_active ? `'${user.is_active}'` : null}, ${user.inactive_reason ? `'${user.inactive_reason}'` : null}, ${user.gender}, ${user.class_type ? `'${user.class_type}'` : null}, ${user.origin ? `'${user.origin}'` : null}, ${user.residence_in_semarang ? `'${user.residence_in_semarang}'` : null})`;
+            const query = `insert into users( name, card_id, password, birth_date, grade, telephone_number, role, nis, is_active, inactive_reason, gender, class_type, origin, residence_in_semarang) values ('${user.name.split("'").join("''")}',${user.card_id ? `'${user.card_id}'` : null}, '${hashedPassword}', '${user.birth_date}', ${user.grade ? `'${user.grade}'` : null}, '${user.telephone_number}', '${user.role}', ${user.nis ? `'${user.nis}'` : null}, ${user.is_active ? `'${user.is_active}'` : null}, ${user.inactive_reason ? `'${user.inactive_reason}'` : null}, ${user.gender}, ${user.class_type ? `'${user.class_type}'` : null}, ${user.origin ? `'${user.origin}'` : null}, ${user.residence_in_semarang ? `'${user.residence_in_semarang}'` : null})`;
 
             connection.query(query, (err, rows) => {
                 connection.release();
