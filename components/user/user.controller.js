@@ -44,6 +44,15 @@ class UserController {
 	};
 
 	getUsers = async (req, res) => {
+		if(req.userData.role === 1){
+			try {
+				const dbResult = await this.userService.getUser(req.userData.id);
+				return res.status(200).send(dbResult);
+			} catch (err) {
+				return res.status(500).send(err);
+			}
+		}
+		
 		if (req.query.userId) {
 			try {
 				const dbResult = await this.userService.getUser(req.query.userId);

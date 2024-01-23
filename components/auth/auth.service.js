@@ -55,30 +55,6 @@ class AuthService {
         })
     }
 
-    authorizeManager = (req, res, next) => {
-        let token;
-        try {
-            token = req.headers.authorization.split(' ')[1];
-        } catch (err) {
-            return res.status(401).send({ msg: "Invalid token" });
-        }
-
-        if (!token) {
-            return res.status(401).send({ msg: "Invalid token" });
-        }
-
-        jwt.verify(token, this.secret, (err, userData) => {
-            if (err) {
-                return res.status(401).send({ msg: "Invalid token" });
-            }
-            if (userData.role != 3) {
-                return res.status(403).end();
-            }
-            req.userData = userData;
-            next();
-        })
-    }
-
     authorizeStudent = (req, res, next) => {
         let token;
         try {

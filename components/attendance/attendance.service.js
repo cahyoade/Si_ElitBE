@@ -117,7 +117,7 @@ class AttendanceService {
             }
 
             const query = `select u.name, u.gender, 
-            makedate(year(c.start_date), week(c.start_date) * 7 - 5) as week_start, 
+            makedate(year(c.start_date), week(c.start_date) * 7 - 6) as week_start, 
             makedate(year(c.start_date), week(c.start_date) * 7) as week_end,
             ct.name as class_name,
             count(case a.status 
