@@ -11,9 +11,9 @@ class UserController {
 
 		const date = moment(req.body.birth_date).format('YYYY-MM-DD');
 		let card_id;
-		try	{
+		try {
 			card_id = req.body.card_id.toUpperCase();
-		}catch(err){
+		} catch (err) {
 			card_id = null;
 		}
 
@@ -44,7 +44,7 @@ class UserController {
 	};
 
 	getUsers = async (req, res) => {
-		if(req.userData.role === 1){
+		if (req.userData.role === 1) {
 			try {
 				const dbResult = await this.userService.getUser(req.userData.id);
 				return res.status(200).send(dbResult);
@@ -52,7 +52,7 @@ class UserController {
 				return res.status(500).send(err);
 			}
 		}
-		
+
 		if (req.query.userId) {
 			try {
 				const dbResult = await this.userService.getUser(req.query.userId);
@@ -94,7 +94,7 @@ class UserController {
 			try {
 				const auth = await bcrypt.compare(req.body.password, req.userData.password);
 				if (auth) {
-					
+
 					const dbResult = await this.userService.updateUser(user, req.body.passwordNew);
 					return res.status(200).send(dbResult);
 				}
@@ -107,12 +107,12 @@ class UserController {
 
 		const date = moment(req.body.birth_date).format('YYYY-MM-DD');
 		let card_id;
-		try	{
+		try {
 			card_id = req.body.card_id.toUpperCase();
-		}catch(err){
+		} catch (err) {
 			card_id = null;
 		}
-		
+
 		const user = new User(
 			req.body.id,
 			req.body.name,
