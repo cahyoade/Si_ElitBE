@@ -24,6 +24,9 @@ class WsModule {
 			ws.on('error', console.error);
 			ws.on('pong', () => {
 				this.deviceStatus[ws.name] = true;
+			});
+			ws.on('ping', () => {
+				ws.pong();
 			})
 		});
 
