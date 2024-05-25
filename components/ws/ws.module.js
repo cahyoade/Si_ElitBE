@@ -23,6 +23,7 @@ class WsModule {
 			});
 			ws.on('error', console.error);
 			ws.on('pong', () => {
+				clearTimeout(ws.timeout);
 				this.deviceStatus[ws.name] = true;
 			});
 			ws.on('ping', () => {
@@ -36,6 +37,9 @@ class WsModule {
 	ping = () => {
 		this.wss.clients.forEach(ws => {
 			this.deviceStatus[ws.name] = false
+			ws.timeout = setTimeout(() => {
+				ws.terminate();
+			}, 1000);
 			if (ws.readyState === 1) {
 				ws.ping();
 			}
