@@ -16,32 +16,28 @@ class WsModule {
 			ws.name = ws.protocol;
 			this.deviceStatus[ws.name] = true;
 			ws.on('message', payload => {
-					if (payload.toString() === 'pong') {
-						this.deviceStatus[ws.name] = true;
-						return;
-					}
-
 					const [type, data] = payload.toString().split(',');
 					if (data && type === 'req_att') {
 						this.handleAttendance(ws, data)
 					}
 			});
 			ws.on('error', console.error);
+			ws.on('pong', () => {
+				this.deviceStatus[ws.name] = true;
+			})
 		});
 
 		setInterval(this.ping, 10000);
-
 	}
 
 	ping = () => {
 		this.wss.clients.forEach(ws => {
 			this.deviceStatus[ws.name] = false
 			if (ws.readyState === 1) {
-				ws.send('ping');
+				ws.ping();
 			}
 		});
 	}
-
 
 	create() {
 		return {router: this.getRouter()};
@@ -49,7 +45,7 @@ class WsModule {
 
 	getRouter() {
 		const router = express.Router();
-		//router.use(this.authService.authorizeAdmin);
+		router.use(this.authService.authorizeAdmin);
 		router.route('/').get(async (_, res) => {
 			const deviceStatus = await this.getDevicesStatus();
 			return res.status(200).send(deviceStatus);
