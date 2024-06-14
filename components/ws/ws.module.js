@@ -12,6 +12,7 @@ class WsModule {
 		this.deviceStatus = env.devices.split(',').reduce((obj, key) => ({...obj, [key]: false}), {});
 
 		this.wss.on('connection', ws => {
+			console.log(ws);
 			if(!(env.devices.split(',').includes(ws.protocol))) ws.close();
 			ws.name = ws.protocol;
 			this.deviceStatus[ws.name] = true;
