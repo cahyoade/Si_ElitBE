@@ -8,7 +8,13 @@ class MqttService {
   }
 
   start = () => {
-    this.client = mqtt.connect(this.env.mqttBrokerHost);
+		this.client = mqtt.connect({
+			host: this.env.mqttBrokerHost,
+			port: this.env.mqttBrokerPort,
+			username: this.env.mqttBrokerUsername,
+			password: this.env.mqttBrokerPassword,
+			protocol: 'mqtts'
+		});
     this.client.on('connect', () => {
       Object.keys(this.devicesStatus).map(device => {
         this.client.subscribe(device);

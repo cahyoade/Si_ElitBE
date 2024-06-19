@@ -4,6 +4,6 @@ dotenv.config();
 
 const app = new App(process.env).create();
 
-app.listen(4000, () => {
+app.listen(process.env.port, () => {
   console.log('Server listening...');
 });
